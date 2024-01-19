@@ -1,1 +1,15 @@
-
+*build*
+.idea/
+.vscode/
+Debug/
+Release/
+Deploy/*
+Sources/CMakeConfig.h
+Shaders/*.spv
+*.exe
+lib*.a
+*.dll
+*.ilk
+*.pdb
+*.exe.manifest
+resource.rc

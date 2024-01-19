@@ -1,0 +1,32 @@
+#include <windows.h>
+
+#define APP_VERSION "@PROJECT_VERSION@"
+#define APP_NAME "@PROJECT_LABEL@"
+#define APP_AUTHOR "Cydeamon"
+#define BUILD_TYPE "@CMAKE_BUILD_TYPE@"
+#define DESCRIPTION "@PROJECT_LABEL@ @PROJECT_VERSION@. @CMAKE_BUILD_TYPE@ version"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     @PROJECT_VERSION_MAJOR@,@PROJECT_VERSION_MINOR@,@PROJECT_VERSION_PATCH@
+PRODUCTVERSION  @PROJECT_VERSION_MAJOR@,@PROJECT_VERSION_MINOR@,@PROJECT_VERSION_PATCH@
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileVersion", APP_VERSION
+            VALUE "ProductVersion", APP_VERSION
+            VALUE "ProductName", APP_NAME
+            VALUE "CompanyName", APP_AUTHOR
+            VALUE "LegalCopyright", APP_AUTHOR
+            VALUE "FileDescription", DESCRIPTION
+            VALUE "InternalName", APP_NAME
+            VALUE "OriginalFilename", APP_NAME
+
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
