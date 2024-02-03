@@ -7,13 +7,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../)
 
 add_executable(
     ${PROJECT_NAME}
-
-    # Project sources
-    Sources/Game/Game.cpp
-    Sources/Game/Game.h
     Sources/Main.cpp
     resource.rc
     Sources/CMakeConfig.h
+    Sources/Game/Game.cpp
+    Sources/Game/Game.h
+    Sources/Game/FreeMoveCamera.h
+    Sources/Game/FreeMoveCamera.cpp
 )
 
 add_subdirectory(Sources/Engine)
