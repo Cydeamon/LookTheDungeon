@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 set(CMAKE_CXX_STANDARD 23)
-project(TemplateProject VERSION 0.1.0)
-set(PROJECT_LABEL "Template Project")
+project(LookTheDungeon VERSION 0.1.0)
+set(PROJECT_LABEL "Look! The Dungeon!")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../)
 
 

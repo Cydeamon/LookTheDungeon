@@ -12,9 +12,7 @@ Game::Game()
 void Game::init()
 {
     engine->Init();
-    engine->ApplyPaletteToRender(true);
-    engine->SetWindowResolution(1280, 720);
-    engine->SetInternalResolution(480, 270);
+    engine->SetWindowResolution(1600, 900);
     engine->SetEngineMode(EngineMode::MODE_3D);
     engine->CenterWindow();
 }
