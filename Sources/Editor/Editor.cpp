@@ -1,15 +1,15 @@
-#include "Game.h"
+#include "Editor.h"
 #include "CMakeConfig.h"
 #include "IsometricCamera.h"
 
-Game::Game()
+Editor::Editor()
 {
     engine = &Engine::GetInstance();
     init();
     engine->SetWindowTitle(PROJECT_LABEL);
 }
 
-void Game::init()
+void Editor::init()
 {
     engine->Init();
     engine->SetWindowResolution(1600, 900);
@@ -17,7 +17,7 @@ void Game::init()
     engine->CenterWindow();
 }
 
-void Game::Run()
+void Editor::Run()
 {
     IsometricCamera camera;
 
@@ -50,14 +50,14 @@ void Game::Run()
     }
 }
 
-void Game::update()
+void Editor::update()
 {
     // TODO: Update game logic here
 }
 
-void Game::handleInput()
+void Editor::handleInput()
 {
     // TODO: Handle user input here
 }
 
-Game::~Game() = default;
+Editor::~Editor() = default;
