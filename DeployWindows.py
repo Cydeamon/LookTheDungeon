@@ -103,7 +103,8 @@ if os.path.exists("./Assets/"):
 # Copy shaders binaries files if exists
 if os.path.exists("./Shaders/"):
     print("Copying shaders binaries files to deploy folder: " + deploy_folder)
-    shutil.copytree("./Shaders/", deploy_folder + "/Shaders/", ignore=ignore_shader_sources)
+    shutil.copytree("./Shaders/", deploy_folder + "/Shaders/")
+    # shutil.copytree("./Shaders/", deploy_folder + "/Shaders/", ignore=ignore_shader_sources)
 
 # Archive and delete folder
 shutil.make_archive("./Deploy/" + project_version, 'zip', deploy_folder)

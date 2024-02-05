@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "CMakeConfig.h"
 #include "FreeMoveCamera.h"
+#include "IsometricCamera.h"
 
 Game::Game()
 {
@@ -19,23 +20,22 @@ void Game::init()
 
 void Game::Run()
 {
-    FreeMoveCamera camera;
-    camera.SetFOV(90);
-    camera.SetPositionX(-5);
-    camera.SetRotation(camera.GetRotation().Rotate(0, 90, 0));
+    IsometricCamera camera;
 
-    Model *model1 = new Model("Assets/Models/Characters/Knight.glb");
-    Model *model2 = new Model("Assets/Models/Characters/Barbarian.glb");
-    Model *model3 = new Model("Assets/Models/Characters/Mage.glb");
-    Model *model4 = new Model("Assets/Models/Characters/Rogue.glb");
-    Model *model5 = new Model("Assets/Models/Characters/Skeleton_Mage.glb");
+    int size = 10;
+    int tileSize = 4;
+    std::vector<std::vector<Model*>> floorTiles(size, std::vector<Model*>(size));
 
-    model2->SetPositionZ(2);
-    model3->SetPositionZ(4);
-    model4->SetPositionZ(-2);
-    model5->SetPositionZ(-4);
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            floorTiles[i][j] = new Model("Assets/Models/Dungeon/floor_tile_large.gltf.glb");
+            floorTiles[i][j]->SetPosition(i * tileSize, 0, j * tileSize);
+        }
+    }
 
-
+    Model *player = new Model("Assets/Models/Characters/Knight.glb");
 
     while (engine->IsRunning())
     {

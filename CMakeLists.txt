@@ -14,6 +14,8 @@ add_executable(
     Sources/Game/Game.h
     Sources/Game/FreeMoveCamera.h
     Sources/Game/FreeMoveCamera.cpp
+    Sources/Game/IsometricCamera.h
+    Sources/Game/IsometricCamera.cpp
 )
 
 add_subdirectory(Sources/Engine)
