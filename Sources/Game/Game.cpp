@@ -21,10 +21,21 @@ void Game::Run()
 {
     FreeMoveCamera camera;
     camera.SetFOV(90);
-    camera.SetPositionY(2);
+    camera.SetPositionX(-5);
     camera.SetRotation(camera.GetRotation().Rotate(0, 90, 0));
 
-    Model *model1 = new Model("Assets/Models/backpack.obj");
+    Model *model1 = new Model("Assets/Models/Characters/Knight.glb");
+    Model *model2 = new Model("Assets/Models/Characters/Barbarian.glb");
+    Model *model3 = new Model("Assets/Models/Characters/Mage.glb");
+    Model *model4 = new Model("Assets/Models/Characters/Rogue.glb");
+    Model *model5 = new Model("Assets/Models/Characters/Skeleton_Mage.glb");
+
+    model2->SetPositionZ(2);
+    model3->SetPositionZ(4);
+    model4->SetPositionZ(-2);
+    model5->SetPositionZ(-4);
+
+
 
     while (engine->IsRunning())
     {
