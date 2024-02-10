@@ -1,0 +1,133 @@
+<rml>
+<head>
+    <link type="text/css" href="Editor.css"/>
+    <title>Editor</title>
+</head>
+<body>
+<div id="content">
+    <div id="editor-sidebar">
+        <div class="tabs">
+            <div class="tabs-heads">
+                <div for="characters-tab" class="tabs-head active">Characters</div>
+                <div for="assets-tab" class="tabs-head">Assets</div>
+            </div>
+            <div class="tabs-content">
+                <div id="characters-tab" class="tabs-content-item active">
+                    <div class="assets-pick characters">
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                        <div class="asset-pick">
+                            <div class="preview" style="background-image: url(https://loremflickr.com/100/100/1)"></div>
+                            <div class="name">Knight</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="assets-tab" class="tabs-content-item">
+                    <div class="assets-pick level-parts">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="group-container editor-settings">
+            <div class="row">
+                <div class="title">Editor Settings</div>
+            </div>
+            <div class="row">
+                <label for="draw-grid"><input checked type="checkbox" id="draw-grid">Draw grid</label>
+                <label for="draw-axis"><input checked type="checkbox" id="draw-axis">Draw axis</label>
+                <label for="stick-to-grid"><input checked type="checkbox" id="stick-to-grid">Stick to grid</label>
+            </div>
+            <div class="row">
+                <label for="stick-grid-size">
+                    Stick grid size (meters): <input type="number" id="stick-grid-size" value="1">
+                </label>
+            </div>
+        </div>
+        <div class="group-container selected-object-transforms">
+            <div class="row">
+                <div class="title">Selected Object Transforms - <span class="object-name">Knight</span></div>
+            </div>
+            <div class="row coord-row">
+                <label>Position: </label>
+                <input type="number" id="position-x">
+                <input type="number" id="position-y">
+                <input type="number" id="position-z">
+            </div>
+            <div class="row coord-row">
+                <label>Rotation: </label>
+                <input type="number" id="rotation-x">
+                <input type="number" id="rotation-y">
+                <input type="number" id="rotation-z">
+            </div>
+        </div>
+        <div class="group-container debug-info">
+            <div class="row">
+                <div>FPS: <span id="fps">400</span></div>
+                <div>Total number of objects: <span id="total-objects">512</span></div>
+            </div>
+        </div>
+    </div>
+    <div id="render">
+        RENDER CONTAINER
+    </div>
+</div>
+</body>
+</rml>

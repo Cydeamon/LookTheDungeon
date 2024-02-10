@@ -1,0 +1,161 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    color: #ddd;
+    margin: 0;
+    font-family: "Roboto";
+    font-size: 14px;
+}
+
+#content {
+    display: flex;
+}
+
+#editor-sidebar {
+    flex-basis: 20%;
+    min-width: 300px;
+    height: 100vh;
+    border-right: 1px solid #444;
+    padding: 5px;
+    box-shadow: 0 0 20px black;
+    display: flex;
+    flex-direction: column;
+    background: #222;
+}
+
+#render {
+    flex-grow: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: red;
+}
+
+/*********************************************************/
+/*************************  Tabs  ************************/
+
+.tabs {
+    flex-grow: 1;
+}
+
+.tabs-heads {
+    display: flex;
+}
+
+.tabs-heads .tabs-head {
+    border: 1px solid #666;
+    border-bottom: none;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 5px 5px 0 0;
+    margin-right: 2px;
+    position: relative;
+    overflow: hidden;
+    background: #444;
+}
+
+.tabs-heads .tabs-head.active {
+    background: #111;
+    box-shadow: 0 -5px 10px black;
+}
+
+.tabs-heads .tabs-head:after {
+    content: '';
+    display: block;
+    background-color: #fff2;
+    width: 100%;
+    height: 50%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.tabs-content {
+    padding: 5px;
+    border: 1px solid #666;
+    border-radius: 0 5px 5px 5px;
+    height: calc(100% - 30px);
+    background: #111;
+    margin-top: -1px;
+}
+
+.tabs-content-item {
+    display: none;
+}
+
+.tabs-content-item.active {
+    display: block;
+}
+
+/*********************************************************/
+/********************** Assets pick **********************/
+
+.assets-pick {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.assets-pick .asset-pick {
+    margin: 2.5px;
+    border: 1px solid #666;
+    border-radius: 5px 5px 0 0;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.assets-pick .asset-pick .preview {
+    width: 80px;
+    height: 80px;
+}
+
+.assets-pick .asset-pick .name {
+    padding: 2px;
+    text-align: center;
+}
+
+/*********************************************************/
+/************************* Groups ************************/
+
+.group-container {
+    border: 1px solid #666;
+    margin-top: 5px;
+    padding: 5px;
+    border-radius: 5px;
+    background: #111;
+}
+
+.row {
+    margin: 5px 0;
+}
+
+.row label:not(:first-child) {
+    margin-left: 5px;
+}
+
+.row .title {
+    font-weight: bold;
+    font-size: 16px;
+    position: relative;
+    top: -5px;
+}
+
+.coord-row {
+    display: flex;
+}
+
+.coord-row > input {
+    width: 100%;
+}
+
+.coord-row label {
+    min-width: 70px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}

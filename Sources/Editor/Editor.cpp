@@ -2,6 +2,11 @@
 #include "CMakeConfig.h"
 #include "IsometricCamera.h"
 
+/**
+ * TODO: Navmeshes
+ * TODO: Camera rotation via Num4, Num6
+ */
+
 Editor::Editor()
 {
     engine = &Engine::GetInstance();
@@ -15,6 +20,7 @@ void Editor::init()
     engine->SetWindowResolution(1600, 900);
     engine->SetEngineMode(EngineMode::MODE_3D);
     engine->CenterWindow();
+    setupUI();
 }
 
 void Editor::Run()
@@ -58,6 +64,14 @@ void Editor::update()
 void Editor::handleInput()
 {
     // TODO: Handle user input here
+}
+
+void Editor::setupUI()
+{
+    ui = &UI::GetInstance();
+    ui->Init();
+    ui->LoadLayout("Assets/UI/Editor/Editor.rml");
+    ui->ShowLayout("Editor");
 }
 
 Editor::~Editor() = default;
