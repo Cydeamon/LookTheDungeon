@@ -1,13 +1,14 @@
-
 * {
     box-sizing: border-box;
 }
 
 body {
     color: #ddd;
-    margin: 0;
     font-family: "Roboto";
+    font-weight: 500;
     font-size: 14px;
+    height: 100%;
+    width: 100%;
 }
 
 #content {
@@ -16,14 +17,15 @@ body {
 
 #editor-sidebar {
     flex-basis: 20%;
-    min-width: 300px;
-    height: 100vh;
-    border-right: 1px solid #444;
+    min-width: 390px;
+    height: 100%;
+    border-right: 1px;
+    border-color: #333;
     padding: 5px;
-    box-shadow: 0 0 20px black;
     display: flex;
     flex-direction: column;
     background: #222;
+    padding-top: 70px;
 }
 
 #render {
@@ -32,23 +34,57 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    color: red;
+    font-size: 100px
 }
 
-/*********************************************************/
-/*************************  Tabs  ************************/
+scrollbarvertical {
+    width: 10px;
+    position: absolute;
+    right: 0;
+    margin-left: 2.5px;
+}
+
+
+sliderbar {
+    border: 1px;
+    border-radius: 4px;
+    border-color: #666;
+    background: #222;
+}
+
+/* ******************************************************* */
+/* ***********************  Inputs  ********************** */
+
+input {
+    background: #333;
+    border: 1px;
+    border-color: #666;
+    margin: 0;
+}
+
+input[type=checkbox]:not(:checked) {
+    background: #111;
+}
+
+
+/* ******************************************************* */
+/* ************************  Tabs  *********************** */
 
 .tabs {
     flex-grow: 1;
+    overflow: hidden;
 }
 
 .tabs-heads {
     display: flex;
+    margin-top: -30px;
+    height: 30px;
 }
 
 .tabs-heads .tabs-head {
-    border: 1px solid #666;
-    border-bottom: none;
+    border: 1px;
+    border-color: #666;
+    border-bottom: 0;
     padding: 5px;
     cursor: pointer;
     border-radius: 5px 5px 0 0;
@@ -56,56 +92,54 @@ body {
     position: relative;
     overflow: hidden;
     background: #444;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .tabs-heads .tabs-head.active {
     background: #111;
-    box-shadow: 0 -5px 10px black;
-}
-
-.tabs-heads .tabs-head:after {
-    content: '';
-    display: block;
-    background-color: #fff2;
-    width: 100%;
-    height: 50%;
-    position: absolute;
-    left: 0;
-    top: 0;
 }
 
 .tabs-content {
     padding: 5px;
-    border: 1px solid #666;
+    border: 1px;
+    border-color: #666;
     border-radius: 0 5px 5px 5px;
-    height: calc(100% - 30px);
     background: #111;
     margin-top: -1px;
+    height: 100%;
+    display: flex;
 }
 
 .tabs-content-item {
     display: none;
+    overflow-y: auto;
+    flex-grow: 1;
 }
 
 .tabs-content-item.active {
     display: block;
 }
 
-/*********************************************************/
-/********************** Assets pick **********************/
+/* ******************************************************* */
+/* ********************* Assets pick ********************* */
 
 .assets-pick {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
 }
 
 .assets-pick .asset-pick {
     margin: 2.5px;
-    border: 1px solid #666;
+    border: 1px;
+    border-color: #666;
     border-radius: 5px 5px 0 0;
     overflow: hidden;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
 }
 
 .assets-pick .asset-pick .preview {
@@ -118,34 +152,53 @@ body {
     text-align: center;
 }
 
-/*********************************************************/
-/************************* Groups ************************/
+/* ******************************************************* */
+/* ************************ Groups *********************** */
 
 .group-container {
-    border: 1px solid #666;
+    border: 1px;
+    border-color: #666;
     margin-top: 5px;
     padding: 5px;
+    padding-bottom: 20px;
     border-radius: 5px;
     background: #111;
 }
 
-.row {
-    margin: 5px 0;
+.flex-row {
+    display: flex;
+    flex-direction: row;
 }
 
-.row label:not(:first-child) {
+.row {
+    margin: 5px;
+}
+
+.row > input {
+    width: 50px;
     margin-left: 5px;
+}
+
+.row > label.checkbox-label span {
+    margin-left: 5px;
+}
+
+.row label {
+    margin-right: 10px;
+}
+
+.row label span {
+    vertical-align: center;
 }
 
 .row .title {
     font-weight: bold;
     font-size: 16px;
-    position: relative;
-    top: -5px;
 }
 
 .coord-row {
     display: flex;
+    margin-top: 5px;
 }
 
 .coord-row > input {
@@ -154,7 +207,6 @@ body {
 
 .coord-row label {
     min-width: 70px;
-    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;

@@ -42,6 +42,7 @@ void Editor::Run()
 
     Model *player = new Model("Assets/Models/Characters/Knight.glb");
 
+
     while (engine->IsRunning())
     {
         /***************************************************/
@@ -70,7 +71,6 @@ void Editor::setupUI()
 {
     ui = &UI::GetInstance();
     ui->Init();
-    ui->ShowDebuggerUI(true);
     ui->LoadLayout("Assets/UI/Editor/Editor.rml");
     ui->ShowLayout("Editor");
 }
