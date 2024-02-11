@@ -66,7 +66,6 @@ def find_executables(project_name):
 
     return executables
 
-
 # Find project executable in current directory (Prefer file with "Release" postfix, otherwise "Debug")
 executables = find_executables(find_project_name())
 

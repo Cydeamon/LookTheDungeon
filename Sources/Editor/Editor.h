@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Engine/Engine.h"
-#include "UI.h"
 
 class Editor
 {
