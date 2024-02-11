@@ -16,4 +16,5 @@ private:
     void init();
     void update();
     void handleInput();
+    void setupUI();
 };

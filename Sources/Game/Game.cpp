@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "CMakeConfig.h"
 #include "IsometricCamera.h"
+#include "UI.h"
 
 Game::Game()
 {
@@ -15,6 +16,7 @@ void Game::init()
     engine->SetWindowResolution(1600, 900);
     engine->SetEngineMode(EngineMode::MODE_3D);
     engine->CenterWindow();
+    setupUI();
 }
 
 void Game::Run()
@@ -58,6 +60,11 @@ void Game::update()
 void Game::handleInput()
 {
     // TODO: Handle user input here
+}
+
+void Game::setupUI()
+{
+    UI::GetInstance().Init();
 }
 
 Game::~Game() = default;
