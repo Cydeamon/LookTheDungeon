@@ -64,7 +64,6 @@ void Game::handleInput()
 
 void Game::setupUI()
 {
-    UI::GetInstance().Init();
 }
 
 Game::~Game() = default;
