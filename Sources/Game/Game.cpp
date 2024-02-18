@@ -1,7 +1,6 @@
 #include "Game.h"
 #include "CMakeConfig.h"
 #include "IsometricCamera.h"
-#include "UI.h"
 
 Game::Game()
 {

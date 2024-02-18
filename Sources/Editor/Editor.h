@@ -12,7 +12,6 @@ public:
 
 private:
     Engine* engine;
-    UI* ui;
 
     void init();
     void update();

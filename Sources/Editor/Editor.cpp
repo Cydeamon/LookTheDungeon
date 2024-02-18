@@ -68,9 +68,7 @@ void Editor::handleInput()
 
 void Editor::setupUI()
 {
-    ui = &UI::GetInstance();
-    ui->LoadLayout("Assets/UI/Editor/Editor.rml");
-    ui->ShowLayout("Editor");
+
 }
 
 Editor::~Editor() = default;
