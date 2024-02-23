@@ -1,26 +1,25 @@
 #include "Editor.h"
+#include "EditorUI.h"
 #include "CMakeConfig.h"
 #include "IsometricCamera.h"
 
 /**
  * TODO: Navmeshes
- * TODO: Camera rotation via Num4, Num6
+ * TODO: 90deg camera rotation via Num4, Num6
  */
 
 Editor::Editor()
 {
-    engine = &Engine::GetInstance();
     init();
-    engine->SetWindowTitle(PROJECT_LABEL);
+    Engine::GetInstance().SetWindowTitle(PROJECT_LABEL);
 }
 
 void Editor::init()
 {
-    engine->Init();
-    engine->SetWindowResolution(1600, 900);
-    engine->SetEngineMode(EngineMode::MODE_3D);
-    engine->CenterWindow();
-    setupUI();
+    Engine::GetInstance().Init();
+    Engine::GetInstance().SetWindowResolution(1600, 900);
+    Engine::GetInstance().SetEngineMode(EngineMode::MODE_3D);
+    Engine::GetInstance().CenterWindow();
 }
 
 void Editor::Run()
@@ -29,7 +28,7 @@ void Editor::Run()
 
     int size = 10;
     int tileSize = 4;
-    std::vector<std::vector<Model*>> floorTiles(size, std::vector<Model*>(size));
+    std::vector<std::vector<Model *>> floorTiles(size, std::vector<Model *>(size));
 
     for (int i = 0; i < size; i++)
     {
@@ -42,17 +41,18 @@ void Editor::Run()
 
     Model *player = new Model("Assets/Models/Characters/Knight.glb");
 
-    while (engine->IsRunning())
+    while (Engine::GetInstance().IsRunning())
     {
         /***************************************************/
         /********************** Update *********************/
         handleInput();
-        engine->Update();
+        Engine::GetInstance().Update();
+        EditorUI::GetInstance().Update();
         update();
 
         /***************************************************/
         /********************** Render *********************/
-        engine->DrawFrame();
+        Engine::GetInstance().DrawFrame();
     }
 }
 
@@ -64,11 +64,6 @@ void Editor::update()
 void Editor::handleInput()
 {
     // TODO: Handle user input here
-}
-
-void Editor::setupUI()
-{
-
 }
 
 Editor::~Editor() = default;

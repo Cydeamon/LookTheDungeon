@@ -27,6 +27,8 @@ add_executable(
     Sources/Game/Game.h
     Sources/Editor/IsometricCamera.cpp
     Sources/Editor/IsometricCamera.h
+    Sources/Editor/EditorUI.cpp
+    Sources/Editor/EditorUI.h
 )
 
 add_subdirectory(Sources/Engine)
