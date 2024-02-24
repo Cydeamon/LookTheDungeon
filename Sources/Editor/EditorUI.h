@@ -11,4 +11,6 @@ public:
 private:
     EditorUI();
     ~EditorUI();
+    void SetupLayout();
+    void NotImplementedWarning();
 };
