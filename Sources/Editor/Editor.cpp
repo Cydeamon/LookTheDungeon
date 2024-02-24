@@ -47,8 +47,8 @@ void Editor::Run()
         /********************** Update *********************/
         handleInput();
         Engine::GetInstance().Update();
-        EditorUI::GetInstance().Update();
         update();
+        EditorUI::GetInstance().Update();
 
         /***************************************************/
         /********************** Render *********************/

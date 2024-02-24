@@ -4,6 +4,7 @@
 EditorUI::EditorUI()
 {
     ImGui::StyleColorsDark();
+    Engine::GetInstance().AddFrameBuffers(1);
 }
 
 EditorUI::~EditorUI()
@@ -63,21 +64,19 @@ void EditorUI::SetupLayout()
         // Setup editor panel
         ImGui::Begin("Editor Tools", nullptr);
         {
-
         }
         ImGui::End();
 
         // Render window
-        ImGui::Begin("Render", nullptr);
+        ImGui::Begin("Render");
         {
-
+            Engine::GetInstance().DrawFramebufferToImGuiWindow(0);
         }
         ImGui::End();
 
         // Setup debug log
         ImGui::ShowDebugLogWindow();
     }
-    ImGui::End();
 }
 
 void EditorUI::NotImplementedWarning()
