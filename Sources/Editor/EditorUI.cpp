@@ -19,14 +19,14 @@ EditorUI &EditorUI::GetInstance()
 
 void EditorUI::Update()
 {
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
     SetupLayout();
 }
 
 void EditorUI::SetupLayout()
 {
+    if (!Engine::GetInstance().IsRunning())
+        return;
+
     // Setup docking space
     ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
     {

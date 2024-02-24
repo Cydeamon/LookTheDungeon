@@ -48,10 +48,10 @@ void Editor::Run()
         handleInput();
         Engine::GetInstance().Update();
         update();
-        EditorUI::GetInstance().Update();
 
         /***************************************************/
         /********************** Render *********************/
+        EditorUI::GetInstance().Update();
         Engine::GetInstance().DrawFrame();
     }
 }

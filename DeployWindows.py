@@ -113,6 +113,15 @@ for executable_path in executables:
     # Copy the executable to the deploy folder
     shutil.copy(executable_path, deploy_folder)
 
+# Copy allowed files to deploy folder
+allowed_types = ["ini"]
+
+for file in os.listdir(os.getcwd()):
+    for allowed_type in allowed_types:
+        if file.endswith(allowed_type):
+            print("Copying allowed file: " + file + " to deploy folder: " + deploy_folder)
+            shutil.copy(file, deploy_folder)
+
 # Copy assets folder if exists
 if os.path.exists("./Assets/"):
     print("Copying assets folder to deploy folder: " + deploy_folder)
