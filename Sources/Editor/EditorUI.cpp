@@ -91,7 +91,9 @@ void EditorUI::SetupLayout()
 
             ImGui::Begin("Statistics");
             {
-
+                ImGui::Text("FPS: %i", Engine::GetInstance().GetFPS());
+                ImGui::Text("Average FPS: %i", Engine::GetInstance().GetAverageFPS());
+                ImGui::Text("Elements: %i", Engine::GetInstance().GetGameObjectsCount());
             }
             ImGui::End();
 

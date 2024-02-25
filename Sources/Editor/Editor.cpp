@@ -16,6 +16,7 @@ Editor::Editor()
 
 void Editor::init()
 {
+    Engine::GetInstance().SetDrawSceneToPrimaryFramebuffer(false);
     Engine::GetInstance().Init();
     Engine::GetInstance().SetWindowResolution(1600, 900);
     Engine::GetInstance().SetEngineMode(EngineMode::MODE_3D);
