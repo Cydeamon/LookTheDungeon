@@ -9,8 +9,8 @@ EditorUI::EditorUI()
     Engine::GetInstance().AddFrameBuffers(1);
 
     assetPlaceholderTexture = new Texture("Assets/tempModelPreview.jpg");
-    fillAssets("Assets/Models/LevelParts/", &levelParts);
-    fillAssets("Assets/Models/Characters/", &characters);
+    fillAssets("Assets/Models/LevelParts", &levelParts);
+    fillAssets("Assets/Models/Characters", &characters);
 }
 
 EditorUI::~EditorUI()
@@ -70,7 +70,7 @@ void EditorUI::SetupLayout()
         // Setup editor panel
         ImGui::Begin("Characters");
         {
-            int assetsTablesColumnsCount = ImGui::GetContentRegionAvail().x / 100;
+            int assetsTablesColumnsCount = ImGui::GetContentRegionAvail().x / 110;
             if (assetsTablesColumnsCount > 0)
             {
                 if (ImGui::BeginTable("Characters Table", assetsTablesColumnsCount))
@@ -89,7 +89,7 @@ void EditorUI::SetupLayout()
 
         ImGui::Begin("Level Assets");
         {
-            int assetsTablesColumnsCount = ImGui::GetContentRegionAvail().x / 100;
+            int assetsTablesColumnsCount = ImGui::GetContentRegionAvail().x / 110;
             if (assetsTablesColumnsCount > 0)
             {
                 if (ImGui::BeginTable("Level Assets Table", assetsTablesColumnsCount))
@@ -140,6 +140,8 @@ void EditorUI::NotImplementedWarning()
 
 void EditorUI::fillAssets(std::string path, std::vector<Asset> *assets)
 {
+    std::string category = path.substr(path.find_last_of("/") + 1);
+
     for (const auto &entry: std::filesystem::directory_iterator(path))
     {
         if (entry.path().extension() == ".glb")
@@ -157,6 +159,7 @@ void EditorUI::fillAssets(std::string path, std::vector<Asset> *assets)
                 asset.name = asset.name.replace(replacePos, 5, "");
             }
 
+            asset.texturePath = "Assets/ModelsPreviews/" + category + "/" + asset.name + ".png";
             assets->push_back(asset);
         }
     }
@@ -166,7 +169,25 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
 {
     ImGui::BeginGroup();
     {
-        ImGui::Image((void *) assetPlaceholderTexture->GetID(), {75, 75});
+        if (ImGui::IsRectVisible({100, 100}))
+        {
+            if (asset.texture == nullptr)
+                asset.texture = new Texture(asset.texturePath);
+        }
+        else
+        {
+            if (asset.texture != nullptr)
+            {
+                asset.texture->Destroy();
+                delete asset.texture;
+                asset.texture = nullptr;
+            }
+        }
+
+        if (asset.texture == nullptr)
+            ImGui::Image((void *) assetPlaceholderTexture->GetID(), {100, 100});
+        else
+            ImGui::Image((void *) asset.texture->GetID(), {100, 100});
 
         if (ImGui::IsItemHovered())
         {

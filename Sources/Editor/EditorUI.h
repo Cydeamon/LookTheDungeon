@@ -13,6 +13,7 @@ private:
     {
         std::string name;
         std::string path;
+        std::string texturePath;
         Texture* texture = nullptr;
     };
 
