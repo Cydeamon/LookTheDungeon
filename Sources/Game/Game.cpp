@@ -30,7 +30,7 @@ void Game::Run()
     {
         for (int j = 0; j < size; j++)
         {
-            floorTiles[i][j] = new Model("Assets/Models/Dungeon/floor_tile_large.gltf.glb");
+            floorTiles[i][j] = new Model("Assets/Models/LevelParts/floor_tile_large.gltf.glb");
             floorTiles[i][j]->SetPosition(i * tileSize, 0, j * tileSize);
         }
     }
