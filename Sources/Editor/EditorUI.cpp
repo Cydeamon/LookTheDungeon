@@ -108,11 +108,23 @@ void EditorUI::SetupLayout()
 
         ImGui::Begin("Editor Settings");
         {
+            ImGui::Checkbox("Draw grid", &showGrid);
+            ImGui::SameLine();
+            ImGui::Checkbox("Draw axis", &showAxis);
+            ImGui::SameLine();
+            ImGui::Checkbox("Stick to grid", &stickToGrid);
+
+            ImGui::Text("Grid size");
+            ImGui::SameLine();
+            ImGui::InputFloat("##gridSize", &gridSize);
         }
         ImGui::End();
 
         ImGui::Begin("Selected Object Transforms");
         {
+            ImGui::Text("Selected Object: %s", selectedObjectName.c_str());
+            ImGui::InputFloat3("Position", &selectedObjectPosition[0]);
+            ImGui::InputFloat3("Rotation", &selectedObjectRotation[0]);
         }
         ImGui::End();
 
@@ -128,6 +140,12 @@ void EditorUI::SetupLayout()
         ImGui::Begin("Render");
         {
             Engine::GetInstance().DrawFramebufferToImGuiWindow(0);
+
+            if (ImGui::IsWindowHovered())
+            {
+                ImGui::GetIO().WantCaptureMouse = false;
+                ImGui::GetIO().WantCaptureKeyboard = false;
+            }
         }
         ImGui::End();
     }
