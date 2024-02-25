@@ -11,7 +11,7 @@
 Editor::Editor()
 {
     init();
-    Engine::GetInstance().SetWindowTitle(PROJECT_LABEL);
+    Engine::GetInstance().SetWindowTitle("Look! The Dungeon! - Level Editor");
 }
 
 void Editor::init()
