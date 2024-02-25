@@ -3,6 +3,8 @@
 
 EditorUI::EditorUI()
 {
+    ImGui::LoadIniSettingsFromDisk("EditorUI.ini");
+    ImGui::GetIO().IniFilename = "EditorUI.ini";
     ImGui::StyleColorsDark();
     Engine::GetInstance().AddFrameBuffers(1);
 }
@@ -62,10 +64,36 @@ void EditorUI::SetupLayout()
         }
 
         // Setup editor panel
-        ImGui::Begin("Editor Tools", nullptr);
-        {
-        }
-        ImGui::End();
+
+            ImGui::Begin("Characters");
+            {
+
+            }
+            ImGui::End();
+
+            ImGui::Begin("Level Assets");
+            {
+
+            }
+            ImGui::End();
+
+            ImGui::Begin("Editor Settings");
+            {
+
+            }
+            ImGui::End();
+
+            ImGui::Begin("Selected Object Transforms");
+            {
+
+            }
+            ImGui::End();
+
+            ImGui::Begin("Statistics");
+            {
+
+            }
+            ImGui::End();
 
         // Render window
         ImGui::Begin("Render");
@@ -73,9 +101,6 @@ void EditorUI::SetupLayout()
             Engine::GetInstance().DrawFramebufferToImGuiWindow(0);
         }
         ImGui::End();
-
-        // Setup debug log
-        ImGui::ShowDebugLogWindow();
     }
 }
 
