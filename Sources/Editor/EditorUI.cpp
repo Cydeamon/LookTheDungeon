@@ -114,9 +114,21 @@ void EditorUI::SetupLayout()
             ImGui::SameLine();
             ImGui::Checkbox("Stick to grid", &stickToGrid);
 
-            ImGui::Text("Grid size");
+            ImGui::Text("Sticky grid size");
             ImGui::SameLine();
             ImGui::InputFloat("##gridSize", &gridSize);
+
+            if (showGrid != prevShowGrid)
+            {
+                Engine::GetInstance().SetDrawGrid(showGrid);
+                prevShowGrid = showGrid;
+            }
+
+            if (showAxis != prevShowAxis)
+            {
+                Engine::GetInstance().SetDrawAxisLines(showAxis);
+                prevShowAxis = showAxis;
+            }
         }
         ImGui::End();
 

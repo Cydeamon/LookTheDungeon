@@ -21,8 +21,11 @@ private:
     std::vector<Asset> characters;
     Texture *assetPlaceholderTexture = nullptr;
     bool stickToGrid = true;
+    bool prevStickToGrid = false;
     bool showGrid = true;
+    bool prevShowGrid = false;
     bool showAxis = true;
+    bool prevShowAxis = false;
 
     EditorUI();
     ~EditorUI();
