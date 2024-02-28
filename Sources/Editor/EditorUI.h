@@ -30,11 +30,12 @@ private:
     EditorUI();
     ~EditorUI();
     void SetupLayout();
-    void NotImplementedWarning();
+    static void NotImplementedWarning();
     void DrawAsset(Asset &asset);
-    void fillAssets(std::string path, std::vector<Asset> *assets);
+    void fillAssets(const std::string& path, std::vector<Asset> *assets);
     float gridSize = 1;
     std::string selectedObjectName = "Selected object name";
     float selectedObjectPosition[3] = {0, 0, 0};
     float selectedObjectRotation[3] = {0, 0, 0};
+    Asset *selectedAsset = nullptr;
 };

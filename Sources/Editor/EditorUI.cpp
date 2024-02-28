@@ -13,9 +13,7 @@ EditorUI::EditorUI()
     fillAssets("Assets/Models/Characters", &characters);
 }
 
-EditorUI::~EditorUI()
-{
-}
+EditorUI::~EditorUI() = default;
 
 EditorUI &EditorUI::GetInstance()
 {
@@ -70,7 +68,7 @@ void EditorUI::SetupLayout()
         // Setup editor panel
         ImGui::Begin("Characters");
         {
-            int assetsTablesColumnsCount = ImGui::GetContentRegionAvail().x / 110;
+            int assetsTablesColumnsCount = (int) (ImGui::GetContentRegionAvail().x / 110);
             if (assetsTablesColumnsCount > 0)
             {
                 if (ImGui::BeginTable("Characters Table", assetsTablesColumnsCount))
@@ -89,7 +87,7 @@ void EditorUI::SetupLayout()
 
         ImGui::Begin("Level Assets");
         {
-            int assetsTablesColumnsCount = ImGui::GetContentRegionAvail().x / 110;
+            int assetsTablesColumnsCount = (int) (ImGui::GetContentRegionAvail().x / 110);
             if (assetsTablesColumnsCount > 0)
             {
                 if (ImGui::BeginTable("Level Assets Table", assetsTablesColumnsCount))
@@ -168,9 +166,9 @@ void EditorUI::NotImplementedWarning()
     EXPECT_ERROR(1, "This functionality is not implemented");
 }
 
-void EditorUI::fillAssets(std::string path, std::vector<Asset> *assets)
+void EditorUI::fillAssets(const std::string& path, std::vector<Asset> *assets)
 {
-    std::string category = path.substr(path.find_last_of("/") + 1);
+    std::string category = path.substr(path.find_last_of('/') + 1);
 
     for (const auto &entry: std::filesystem::directory_iterator(path))
     {
@@ -199,6 +197,16 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
 {
     ImGui::BeginGroup();
     {
+        if (selectedAsset == &asset)
+        {
+            const ImVec2 &pos = ImGui::GetCursorScreenPos();
+            ImGui::GetWindowDrawList()->AddRectFilled(
+                {pos.x - 2, pos.y},
+                {pos.x + ImGui::GetContentRegionAvail().x + 8, pos.y + 120},
+                IM_COL32(0, 100, 255, 100)
+            );
+        }
+
         if (ImGui::IsRectVisible({100, 100}))
         {
             if (asset.texture == nullptr)
@@ -214,6 +222,9 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
             }
         }
 
+        // Center image
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (ImGui::GetContentRegionAvail().x - 100) / 2);
+
         if (asset.texture == nullptr)
             ImGui::Image((void *) assetPlaceholderTexture->GetID(), {100, 100});
         else
@@ -228,10 +239,19 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
 
         if (ImGui::IsItemClicked())
         {
-            NotImplementedWarning();
+            selectedAsset = &asset;
         }
 
-        ImGui::Text("%s", asset.name.c_str());
+        // Center text
+        ImVec2 textSize = ImGui::CalcTextSize(asset.name.c_str());
+
+        if (textSize.x < ImGui::GetContentRegionAvail().x)
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (ImGui::GetContentRegionAvail().x - textSize.x) / 2);
+
+        if (selectedAsset == &asset)
+            ImGui::TextColored(ImVec4(1, 1, 0, 1), "%s", asset.name.c_str());
+        else
+            ImGui::Text("%s", asset.name.c_str());
     }
     ImGui::EndGroup();
 }
