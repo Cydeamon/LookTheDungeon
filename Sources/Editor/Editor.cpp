@@ -2,6 +2,7 @@
 #include "EditorUI.h"
 #include "CMakeConfig.h"
 #include "IsometricCamera.h"
+#include "FreeMoveCamera.h"
 
 /**
  * TODO: Navmeshes
@@ -26,6 +27,14 @@ void Editor::init()
 void Editor::Run()
 {
     IsometricCamera camera;
+    Model *model = new Model("Assets/Models/LevelParts/table_long_decorated_C.gltf.glb");
+
+    FreeMoveCamera *freeMoveCamera = new FreeMoveCamera();
+    freeMoveCamera->SetPosition({0, 3, -3});
+    freeMoveCamera->SetRotation({0, 0, 45});
+
+    EditorUI::GetInstance().AddCamera(&camera);
+    EditorUI::GetInstance().AddCamera(freeMoveCamera);
 
     while (Engine::GetInstance().IsRunning())
     {
@@ -44,12 +53,15 @@ void Editor::Run()
 
 void Editor::update()
 {
-    // TODO: Update game logic here
+    if (EditorUI::GetInstance().IsMainRenderWindowIsHovered())
+    {
+//        handleSelectedAssetPlacement();
+    }
 }
 
 void Editor::handleInput()
 {
-    // TODO: Handle user input here
+    EditorUI::GetInstance().HandleCamerasInputs();
 }
 
 Editor::~Editor() = default;

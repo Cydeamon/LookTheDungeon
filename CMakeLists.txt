@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 set(CMAKE_CXX_STANDARD 23)
-project(LookTheDungeon VERSION 0.1.4)
+project(LookTheDungeon VERSION 0.1.5)
 set(PROJECT_LABEL "Look! The Dungeon!")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../)
 set(PROJECT_EDITOR ${PROJECT_NAME}Editor)
@@ -29,6 +29,8 @@ add_executable(
     Sources/Editor/IsometricCamera.h
     Sources/Editor/EditorUI.cpp
     Sources/Editor/EditorUI.h
+    Sources/Editor/FreeMoveCamera.h
+    Sources/Editor/FreeMoveCamera.cpp
 )
 
 add_subdirectory(Sources/Engine)

@@ -6,11 +6,13 @@ EditorUI::EditorUI()
     ImGui::LoadIniSettingsFromDisk("EditorUI.ini");
     ImGui::GetIO().IniFilename = "EditorUI.ini";
     ImGui::StyleColorsDark();
-    Engine::GetInstance().AddFrameBuffers(1);
+    Engine::GetInstance().AddFrameBuffers(2);
 
     assetPlaceholderTexture = new Texture("Assets/tempModelPreview.jpg");
     fillAssets("Assets/Models/LevelParts", &levelParts);
     fillAssets("Assets/Models/Characters", &characters);
+
+    renderHovered.resize(2);
 }
 
 EditorUI::~EditorUI() = default;
@@ -147,15 +149,37 @@ void EditorUI::SetupLayout()
         ImGui::End();
 
         // Render window
+        cameras[0]->SetMainCamera(true);
         ImGui::Begin("Render");
         {
             Engine::GetInstance().DrawFramebufferToImGuiWindow(0);
+            renderHovered[0] = ImGui::IsWindowHovered();
 
             if (ImGui::IsWindowHovered())
             {
                 ImGui::GetIO().WantCaptureMouse = false;
                 ImGui::GetIO().WantCaptureKeyboard = false;
+
             }
+
+        }
+        ImGui::End();
+
+        // Render window
+        cameras[1]->SetMainCamera(true);
+        ImGui::Begin("Render2");
+        {
+            Engine::GetInstance().DrawFramebufferToImGuiWindow(1);
+            renderHovered[1] = ImGui::IsWindowHovered();
+
+            if (ImGui::IsWindowHovered())
+            {
+                ImGui::GetIO().WantCaptureMouse = false;
+                ImGui::GetIO().WantCaptureKeyboard = false;
+
+                cameras[1]->Update();
+            }
+
         }
         ImGui::End();
     }
@@ -254,4 +278,30 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
             ImGui::Text("%s", asset.name.c_str());
     }
     ImGui::EndGroup();
+}
+
+bool EditorUI::IsMainRenderWindowIsHovered()
+{
+    return renderHovered[0];
+}
+
+void EditorUI::AddCamera(Camera3D *camera)
+{
+    cameras.push_back(camera);
+    camera->SetAutoUpdateEnabled(false);
+}
+
+void EditorUI::HandleInputForCamera(int num)
+{
+    EXPECT_ERROR(num >= cameras.size(), "Camera index is out of range");
+
+    if (renderHovered[num]) {
+        cameras[num]->Update();
+    }
+}
+
+void EditorUI::HandleCamerasInputs()
+{
+    for (int i = 0; i < cameras.size(); i++)
+        HandleInputForCamera(i);
 }

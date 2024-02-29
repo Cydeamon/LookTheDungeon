@@ -7,7 +7,11 @@ class EditorUI
 public:
     static EditorUI& GetInstance();
     void Update();
+    bool IsMainRenderWindowIsHovered();
 
+    void AddCamera(Camera3D *camera);
+    void HandleInputForCamera(int num);
+    void HandleCamerasInputs();
 private:
     struct Asset
     {
@@ -16,6 +20,9 @@ private:
         std::string texturePath;
         Texture* texture = nullptr;
     };
+
+    EditorUI();
+    ~EditorUI();
 
     std::vector<Asset> levelParts;
     std::vector<Asset> characters;
@@ -26,16 +33,16 @@ private:
     bool prevShowGrid = false;
     bool showAxis = true;
     bool prevShowAxis = false;
-
-    EditorUI();
-    ~EditorUI();
-    void SetupLayout();
-    static void NotImplementedWarning();
-    void DrawAsset(Asset &asset);
-    void fillAssets(const std::string& path, std::vector<Asset> *assets);
     float gridSize = 1;
     std::string selectedObjectName = "Selected object name";
     float selectedObjectPosition[3] = {0, 0, 0};
     float selectedObjectRotation[3] = {0, 0, 0};
     Asset *selectedAsset = nullptr;
+    std::vector<Camera3D *> cameras;
+    std::vector<bool> renderHovered;
+
+    void SetupLayout();
+    static void NotImplementedWarning();
+    void DrawAsset(Asset &asset);
+    void fillAssets(const std::string& path, std::vector<Asset> *assets);
 };
