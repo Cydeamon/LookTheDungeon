@@ -159,7 +159,6 @@ void EditorUI::SetupLayout()
             {
                 ImGui::GetIO().WantCaptureMouse = false;
                 ImGui::GetIO().WantCaptureKeyboard = false;
-
             }
 
         }
@@ -176,8 +175,6 @@ void EditorUI::SetupLayout()
             {
                 ImGui::GetIO().WantCaptureMouse = false;
                 ImGui::GetIO().WantCaptureKeyboard = false;
-
-                cameras[1]->Update();
             }
 
         }
@@ -221,7 +218,7 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
 {
     ImGui::BeginGroup();
     {
-        if (selectedAsset == &asset)
+        if (SelectedAsset == &asset)
         {
             const ImVec2 &pos = ImGui::GetCursorScreenPos();
             ImGui::GetWindowDrawList()->AddRectFilled(
@@ -263,7 +260,7 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
 
         if (ImGui::IsItemClicked())
         {
-            selectedAsset = &asset;
+            SelectedAsset = &asset;
         }
 
         // Center text
@@ -272,7 +269,7 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
         if (textSize.x < ImGui::GetContentRegionAvail().x)
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (ImGui::GetContentRegionAvail().x - textSize.x) / 2);
 
-        if (selectedAsset == &asset)
+        if (SelectedAsset == &asset)
             ImGui::TextColored(ImVec4(1, 1, 0, 1), "%s", asset.name.c_str());
         else
             ImGui::Text("%s", asset.name.c_str());
@@ -288,10 +285,10 @@ bool EditorUI::IsMainRenderWindowIsHovered()
 void EditorUI::AddCamera(Camera3D *camera)
 {
     cameras.push_back(camera);
-    camera->SetAutoUpdateEnabled(false);
+    camera->SetAutoUpdateStateEnabled(false);
 }
 
-void EditorUI::HandleInputForCamera(int num)
+void EditorUI::HandleCameraStateUpdates(int num)
 {
     EXPECT_ERROR(num >= cameras.size(), "Camera index is out of range");
 
@@ -300,8 +297,8 @@ void EditorUI::HandleInputForCamera(int num)
     }
 }
 
-void EditorUI::HandleCamerasInputs()
+void EditorUI::UpdateCamerasStates()
 {
     for (int i = 0; i < cameras.size(); i++)
-        HandleInputForCamera(i);
+        HandleCameraStateUpdates(i);
 }

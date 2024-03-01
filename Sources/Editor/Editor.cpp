@@ -26,14 +26,14 @@ void Editor::init()
 
 void Editor::Run()
 {
-    IsometricCamera camera;
+    isometricCamera = new IsometricCamera();
     Model *model = new Model("Assets/Models/LevelParts/table_long_decorated_C.gltf.glb");
 
-    FreeMoveCamera *freeMoveCamera = new FreeMoveCamera();
+    freeMoveCamera = new FreeMoveCamera();
     freeMoveCamera->SetPosition({0, 3, -3});
     freeMoveCamera->SetRotation({0, 0, 45});
 
-    EditorUI::GetInstance().AddCamera(&camera);
+    EditorUI::GetInstance().AddCamera(isometricCamera);
     EditorUI::GetInstance().AddCamera(freeMoveCamera);
 
     while (Engine::GetInstance().IsRunning())
@@ -56,12 +56,13 @@ void Editor::update()
     if (EditorUI::GetInstance().IsMainRenderWindowIsHovered())
     {
 //        handleSelectedAssetPlacement();
+        std::cout << isometricCamera->GetResolution() << std::endl;
     }
 }
 
 void Editor::handleInput()
 {
-    EditorUI::GetInstance().HandleCamerasInputs();
+    EditorUI::GetInstance().UpdateCamerasStates();
 }
 
 Editor::~Editor() = default;

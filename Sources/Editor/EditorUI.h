@@ -10,9 +10,9 @@ public:
     bool IsMainRenderWindowIsHovered();
 
     void AddCamera(Camera3D *camera);
-    void HandleInputForCamera(int num);
-    void HandleCamerasInputs();
-private:
+    void HandleCameraStateUpdates(int num);
+    void UpdateCamerasStates();
+
     struct Asset
     {
         std::string name;
@@ -20,6 +20,10 @@ private:
         std::string texturePath;
         Texture* texture = nullptr;
     };
+
+    Asset *SelectedAsset = nullptr;
+
+private:
 
     EditorUI();
     ~EditorUI();
@@ -37,7 +41,6 @@ private:
     std::string selectedObjectName = "Selected object name";
     float selectedObjectPosition[3] = {0, 0, 0};
     float selectedObjectRotation[3] = {0, 0, 0};
-    Asset *selectedAsset = nullptr;
     std::vector<Camera3D *> cameras;
     std::vector<bool> renderHovered;
 

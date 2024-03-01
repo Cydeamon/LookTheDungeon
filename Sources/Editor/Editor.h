@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../Engine/Engine.h"
+#include "FreeMoveCamera.h"
+#include "IsometricCamera.h"
 
 class Editor
 {
@@ -17,4 +19,6 @@ private:
     void update();
     void handleInput();
     void setupUI();
+    IsometricCamera *isometricCamera = nullptr;
+    FreeMoveCamera *freeMoveCamera = nullptr;
 };
