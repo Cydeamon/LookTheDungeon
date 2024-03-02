@@ -108,30 +108,30 @@ void EditorUI::SetupLayout()
 
         ImGui::Begin("Editor Settings");
         {
-            ImGui::Checkbox("Draw grid", &showGrid);
+            ImGui::Checkbox("Draw grid", &ShowGrid);
             ImGui::SameLine();
-            ImGui::Checkbox("Draw axis", &showAxis);
+            ImGui::Checkbox("Draw axis", &ShowAxis);
             ImGui::SameLine();
-            ImGui::Checkbox("Stick to grid", &stickToGrid);
+            ImGui::Checkbox("Stick to grid", &StickToGrid);
 
             ImGui::Text("Sticky grid size");
             ImGui::SameLine();
-            ImGui::InputFloat("##gridSize", &gridSize);
+            ImGui::InputFloat2("##gridSize", &StickyGridSize[0]);
 
             ImGui::Text("Floor height");
             ImGui::SameLine();
-            ImGui::InputFloat("##floorHeight", &floorHeight);
+            ImGui::InputFloat("##floorHeight", &FloorHeight);
 
-            if (showGrid != prevShowGrid)
+            if (ShowGrid != prevShowGrid)
             {
-                Engine::GetInstance().SetDrawGrid(showGrid);
-                prevShowGrid = showGrid;
+                Engine::GetInstance().SetDrawGrid(ShowGrid);
+                prevShowGrid = ShowGrid;
             }
 
-            if (showAxis != prevShowAxis)
+            if (ShowAxis != prevShowAxis)
             {
-                Engine::GetInstance().SetDrawAxisLines(showAxis);
-                prevShowAxis = showAxis;
+                Engine::GetInstance().SetDrawAxisLines(ShowAxis);
+                prevShowAxis = ShowAxis;
             }
         }
         ImGui::End();

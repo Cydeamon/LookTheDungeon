@@ -26,20 +26,23 @@ void IsometricCamera::Update()
         SetPosition(GetPosition() + right * Speed * Engine::GetInstance().GetDelta());
 
     // Handle mouse scroll to zoom
-    if (Input::IsJustPressed(MouseButton::SCROLL_DOWN))
+    if (!Input::IsPressed(MouseButton::RIGHT))
     {
-        SetFOV(GetFOV() + 1);
+        if (Input::IsJustPressed(MouseButton::SCROLL_DOWN))
+        {
+            SetFOV(GetFOV() + 1);
 
-        if (GetFOV() > 15)
-            SetFOV(15);
-    }
+            if (GetFOV() > 15)
+                SetFOV(15);
+        }
 
-    if (Input::IsJustPressed(MouseButton::SCROLL_UP))
-    {
-        SetFOV(GetFOV() - 2);
+        if (Input::IsJustPressed(MouseButton::SCROLL_UP))
+        {
+            SetFOV(GetFOV() - 2);
 
-        if (GetFOV() < 2)
-            SetFOV(2);
+            if (GetFOV() < 2)
+                SetFOV(2);
+        }
     }
 }
 

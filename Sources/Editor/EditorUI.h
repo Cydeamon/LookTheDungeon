@@ -22,7 +22,6 @@ public:
     bool GetStickToGrid();
     bool GetShowGrid();
     bool GetShowAxis();
-    float GetFloorHeight() const { return floorHeight; }
 
     struct Asset
     {
@@ -33,6 +32,11 @@ public:
     };
 
     Asset *SelectedAsset = nullptr;
+    float FloorHeight = 0;
+    bool StickToGrid = true;
+    bool ShowGrid = true;
+    bool ShowAxis = true;
+    float StickyGridSize[2] = {1, 1};
 
 private:
 
@@ -42,13 +46,9 @@ private:
     std::vector<Asset> levelParts;
     std::vector<Asset> characters;
     Texture *assetPlaceholderTexture = nullptr;
-    bool stickToGrid = true;
     bool prevStickToGrid = false;
-    bool showGrid = true;
     bool prevShowGrid = false;
-    bool showAxis = true;
     bool prevShowAxis = false;
-    float gridSize = 1;
     std::string selectedObjectName = "Selected object name";
     float selectedObjectPosition[3] = {0, 0, 0};
     float selectedObjectRotation[3] = {0, 0, 0};
@@ -59,5 +59,4 @@ private:
     static void NotImplementedWarning();
     void DrawAsset(Asset &asset);
     void fillAssets(const std::string& path, std::vector<Asset> *assets);
-    float floorHeight = 0;
 };

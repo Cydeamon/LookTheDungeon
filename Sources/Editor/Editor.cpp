@@ -65,17 +65,37 @@ void Editor::update()
 void Editor::handleInput()
 {
     EditorUI::GetInstance().UpdateCamerasStates();
+
+    if (EditorUI::GetInstance().IsMainRenderWindowIsHovered())
+    {
+        if (Input::IsJustPressed(MouseButton::LEFT))
+        {
+            levelObjects.push_back(activePlaceableObject);
+            activePlaceableObject = nullptr;
+        }
+
+        if (Input::IsPressed(MouseButton::RIGHT) && Input::IsJustPressed(SCROLL_UP))
+            EditorUI::GetInstance().FloorHeight -= 1;
+        if (Input::IsPressed(MouseButton::RIGHT) && Input::IsJustPressed(SCROLL_DOWN))
+            EditorUI::GetInstance().FloorHeight += 1;
+
+        if (Input::IsJustPressed(ESCAPE))
+        {
+            delete activePlaceableObject;
+            EditorUI::GetInstance().SelectedAsset = nullptr;
+            activePlaceableObject = nullptr;
+        }
+    }
 }
 
 void Editor::handleSelectedAssetPlacement()
 {
-    isometricCameraMouseRayCast->StopAtY(EditorUI::GetInstance().GetFloorHeight());
+    isometricCameraMouseRayCast->StopAtY(EditorUI::GetInstance().FloorHeight);
     isometricCamera->PerformMouseRayCast();
 
     // If asset selected, but active object is of different type - delete it
     if (activePlaceableObject != nullptr && EditorUI::GetInstance().SelectedAsset != nullptr && EditorUI::GetInstance().SelectedAsset->path != activePlaceableObject->GetModelPath())
     {
-        std::cout << "Deleting active object" << std::endl;
         delete activePlaceableObject;
         activePlaceableObject = nullptr;
     }
@@ -83,19 +103,21 @@ void Editor::handleSelectedAssetPlacement()
     // If asset selected, but active object is not created - create it
     if (activePlaceableObject == nullptr && EditorUI::GetInstance().SelectedAsset != nullptr)
     {
-        std::cout << "Creating new active object: " << EditorUI::GetInstance().SelectedAsset->path << "" << std::endl;
         activePlaceableObject = new Model(EditorUI::GetInstance().SelectedAsset->path);
     }
 
     // Adjust active object position
     if (activePlaceableObject != nullptr)
     {
-        activePlaceableObject->SetPosition(isometricCameraMouseRayCast->GetStopPosition());
-    }
+        Vector3 pos = isometricCameraMouseRayCast->GetStopPosition();
 
-    if (Input::IsJustPressed(MouseButton::LEFT))
-    {
-//        Objects
+        if (EditorUI::GetInstance().StickToGrid)
+        {
+            pos.x = floorf(pos.x / EditorUI::GetInstance().StickyGridSize[0]) * EditorUI::GetInstance().StickyGridSize[0];
+            pos.z = floorf(pos.z / EditorUI::GetInstance().StickyGridSize[1]) * EditorUI::GetInstance().StickyGridSize[1];
+        }
+
+        activePlaceableObject->SetPosition(pos);
     }
 }
 
