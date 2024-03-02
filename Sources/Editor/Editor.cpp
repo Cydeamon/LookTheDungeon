@@ -1,6 +1,6 @@
+#include "CMakeConfig.h"
 #include "Editor.h"
 #include "EditorUI.h"
-#include "CMakeConfig.h"
 #include "IsometricCamera.h"
 #include "FreeMoveCamera.h"
 
@@ -26,9 +26,13 @@ void Editor::init()
 
 void Editor::Run()
 {
-    isometricCamera = new IsometricCamera();
-    Model *model = new Model("Assets/Models/LevelParts/table_long_decorated_C.gltf.glb");
+    isometricCameraMouseRayCast = new RayCast3D();
+    isometricCameraMouseRayCast->StopAtY(0);
 
+    isometricCamera = new IsometricCamera();
+    isometricCameraMouseRayCast->EnableDebugDraw(true);
+    isometricCamera->SetMouseRayCast(isometricCameraMouseRayCast);
+    
     freeMoveCamera = new FreeMoveCamera();
     freeMoveCamera->SetPosition({0, 3, -3});
     freeMoveCamera->SetRotation({0, 0, 45});
@@ -55,14 +59,18 @@ void Editor::update()
 {
     if (EditorUI::GetInstance().IsMainRenderWindowIsHovered())
     {
-//        handleSelectedAssetPlacement();
-        std::cout << isometricCamera->GetResolution() << std::endl;
+        handleSelectedAssetPlacement();
     }
 }
 
 void Editor::handleInput()
 {
     EditorUI::GetInstance().UpdateCamerasStates();
+}
+
+void Editor::handleSelectedAssetPlacement()
+{
+    isometricCamera->PerformMouseRayCast();
 }
 
 Editor::~Editor() = default;
