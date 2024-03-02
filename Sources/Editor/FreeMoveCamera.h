@@ -7,6 +7,7 @@
 class FreeMoveCamera : public Camera3D
 {
 public:
+    FreeMoveCamera();
 
     void Update() override;
 

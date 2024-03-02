@@ -13,6 +13,17 @@ public:
     void HandleCameraStateUpdates(int num);
     void UpdateCamerasStates();
 
+    void SetStickToGrid(bool stickToGrid);
+    void SetShowGrid(bool showGrid);
+    void SetShowAxis(bool showAxis);
+    void SetGridSize(float gridSize);
+
+    float GetGridSize();
+    bool GetStickToGrid();
+    bool GetShowGrid();
+    bool GetShowAxis();
+    float GetFloorHeight() const { return floorHeight; }
+
     struct Asset
     {
         std::string name;
@@ -48,4 +59,5 @@ private:
     static void NotImplementedWarning();
     void DrawAsset(Asset &asset);
     void fillAssets(const std::string& path, std::vector<Asset> *assets);
+    float floorHeight = 0;
 };

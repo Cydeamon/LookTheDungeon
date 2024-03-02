@@ -27,12 +27,10 @@ void Editor::init()
 void Editor::Run()
 {
     isometricCameraMouseRayCast = new RayCast3D();
-    isometricCameraMouseRayCast->StopAtY(0);
 
     isometricCamera = new IsometricCamera();
-    isometricCameraMouseRayCast->EnableDebugDraw(true);
     isometricCamera->SetMouseRayCast(isometricCameraMouseRayCast);
-    
+
     freeMoveCamera = new FreeMoveCamera();
     freeMoveCamera->SetPosition({0, 3, -3});
     freeMoveCamera->SetRotation({0, 0, 45});
@@ -59,6 +57,7 @@ void Editor::update()
 {
     if (EditorUI::GetInstance().IsMainRenderWindowIsHovered())
     {
+        isometricCameraMouseRayCast->StopAtY(floor);
         handleSelectedAssetPlacement();
     }
 }
@@ -70,7 +69,34 @@ void Editor::handleInput()
 
 void Editor::handleSelectedAssetPlacement()
 {
+    isometricCameraMouseRayCast->StopAtY(EditorUI::GetInstance().GetFloorHeight());
     isometricCamera->PerformMouseRayCast();
+
+    // If asset selected, but active object is of different type - delete it
+    if (activePlaceableObject != nullptr && EditorUI::GetInstance().SelectedAsset != nullptr && EditorUI::GetInstance().SelectedAsset->path != activePlaceableObject->GetModelPath())
+    {
+        std::cout << "Deleting active object" << std::endl;
+        delete activePlaceableObject;
+        activePlaceableObject = nullptr;
+    }
+
+    // If asset selected, but active object is not created - create it
+    if (activePlaceableObject == nullptr && EditorUI::GetInstance().SelectedAsset != nullptr)
+    {
+        std::cout << "Creating new active object: " << EditorUI::GetInstance().SelectedAsset->path << "" << std::endl;
+        activePlaceableObject = new Model(EditorUI::GetInstance().SelectedAsset->path);
+    }
+
+    // Adjust active object position
+    if (activePlaceableObject != nullptr)
+    {
+        activePlaceableObject->SetPosition(isometricCameraMouseRayCast->GetStopPosition());
+    }
+
+    if (Input::IsJustPressed(MouseButton::LEFT))
+    {
+//        Objects
+    }
 }
 
 Editor::~Editor() = default;

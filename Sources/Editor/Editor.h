@@ -3,6 +3,7 @@
 #include "../Engine/Engine.h"
 #include "FreeMoveCamera.h"
 #include "IsometricCamera.h"
+#include "EditorUI.h"
 
 class Editor
 {
@@ -17,6 +18,9 @@ private:
     IsometricCamera *isometricCamera = nullptr;
     FreeMoveCamera *freeMoveCamera = nullptr;
     RayCast3D *isometricCameraMouseRayCast = nullptr;
+    std::vector <Model*> levelObjects;
+    Model *activePlaceableObject = nullptr;
+    int floor = 0;
 
     void init();
     void update();

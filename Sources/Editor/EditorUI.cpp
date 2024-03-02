@@ -118,6 +118,10 @@ void EditorUI::SetupLayout()
             ImGui::SameLine();
             ImGui::InputFloat("##gridSize", &gridSize);
 
+            ImGui::Text("Floor height");
+            ImGui::SameLine();
+            ImGui::InputFloat("##floorHeight", &floorHeight);
+
             if (showGrid != prevShowGrid)
             {
                 Engine::GetInstance().SetDrawGrid(showGrid);
@@ -196,7 +200,7 @@ void EditorUI::fillAssets(const std::string& path, std::vector<Asset> *assets)
         if (entry.path().extension() == ".glb")
         {
             Asset asset;
-            asset.path = entry.path().string();
+            asset.path = path + "/" + entry.path().filename().string();
             asset.name = entry.path().filename().string();
 
             int replacePos = asset.name.find(".gltf.glb");
