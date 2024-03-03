@@ -113,8 +113,15 @@ void Editor::handleSelectedAssetPlacement()
 
         if (EditorUI::GetInstance().StickToGrid)
         {
-            pos.x = floorf(pos.x / EditorUI::GetInstance().StickyGridSize[0]) * EditorUI::GetInstance().StickyGridSize[0];
-            pos.z = floorf(pos.z / EditorUI::GetInstance().StickyGridSize[1]) * EditorUI::GetInstance().StickyGridSize[1];
+            pos.x =
+                floorf(pos.x / EditorUI::GetInstance().StickyGridSize[0]) *
+                EditorUI::GetInstance().StickyGridSize[0] +
+                EditorUI::GetInstance().StickyGridOffset[0];
+
+            pos.z =
+                floorf(pos.z / EditorUI::GetInstance().StickyGridSize[1]) *
+                EditorUI::GetInstance().StickyGridSize[1] +
+                EditorUI::GetInstance().StickyGridOffset[1];
         }
 
         activePlaceableObject->SetPosition(pos);

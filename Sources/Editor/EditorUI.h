@@ -37,6 +37,7 @@ public:
     bool ShowGrid = true;
     bool ShowAxis = true;
     float StickyGridSize[2] = {1, 1};
+    float StickyGridOffset[2] = {0.5, 0.5};
 
 private:
 

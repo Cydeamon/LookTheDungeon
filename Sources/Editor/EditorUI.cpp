@@ -118,6 +118,10 @@ void EditorUI::SetupLayout()
             ImGui::SameLine();
             ImGui::InputFloat2("##gridSize", &StickyGridSize[0]);
 
+            ImGui::Text("Sticky grid offset");
+            ImGui::SameLine();
+            ImGui::InputFloat2("##gridOffset", &StickyGridOffset[0]);
+
             ImGui::Text("Floor height");
             ImGui::SameLine();
             ImGui::InputFloat("##floorHeight", &FloorHeight);
