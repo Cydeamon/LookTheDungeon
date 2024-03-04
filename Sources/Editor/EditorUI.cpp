@@ -114,6 +114,8 @@ void EditorUI::SetupLayout()
             ImGui::SameLine();
             ImGui::Checkbox("Stick to grid", &StickToGrid);
 
+            ImGui::Checkbox("Draw collision shapes", &DrawCollisionShapes);
+
             ImGui::Text("Sticky grid size");
             ImGui::SameLine();
             ImGui::InputFloat2("##gridSize", &StickyGridSize[0]);
@@ -125,6 +127,7 @@ void EditorUI::SetupLayout()
             ImGui::Text("Floor height");
             ImGui::SameLine();
             ImGui::InputFloat("##floorHeight", &FloorHeight);
+
 
             if (ShowGrid != prevShowGrid)
             {

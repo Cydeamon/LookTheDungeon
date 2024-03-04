@@ -104,6 +104,7 @@ void Editor::handleSelectedAssetPlacement()
     if (activePlaceableObject == nullptr && EditorUI::GetInstance().SelectedAsset != nullptr)
     {
         activePlaceableObject = new Model(EditorUI::GetInstance().SelectedAsset->path);
+        activePlaceableObject->GenerateBoxCollider();
     }
 
     // Adjust active object position

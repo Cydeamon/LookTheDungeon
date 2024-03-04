@@ -36,6 +36,7 @@ public:
     bool StickToGrid = true;
     bool ShowGrid = true;
     bool ShowAxis = true;
+    bool DrawCollisionShapes = true;
     float StickyGridSize[2] = {1, 1};
     float StickyGridOffset[2] = {0.5, 0.5};
 
