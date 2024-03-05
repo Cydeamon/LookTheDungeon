@@ -3,7 +3,7 @@
 
 FreeMoveCamera::FreeMoveCamera() : Camera3D()
 {
-    rotation.Clamp(Vector3(-89, 0, 0), Vector3(89, 0, 0));
+    rotation.Clamp(Vector3(-10, 0, 0), Vector3(10, 0, 0));
 }
 
 void FreeMoveCamera::Update()

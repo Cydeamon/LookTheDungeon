@@ -13,6 +13,8 @@ EditorUI::EditorUI()
     fillAssets("Assets/Models/Characters", &characters);
 
     renderHovered.resize(2);
+
+    gameObjects = Engine::GetInstance().GetGameObjects();
 }
 
 EditorUI::~EditorUI() = default;
@@ -128,7 +130,6 @@ void EditorUI::SetupLayout()
             ImGui::SameLine();
             ImGui::InputFloat("##floorHeight", &FloorHeight);
 
-
             if (ShowGrid != prevShowGrid)
             {
                 Engine::GetInstance().SetDrawGrid(ShowGrid);
@@ -145,9 +146,19 @@ void EditorUI::SetupLayout()
 
         ImGui::Begin("Selected Object Transforms");
         {
+            UpdateSelectedObjectProperties();
+            ImGuiInputTextFlags flags = 0;
+
+            if (SelectedGameObject == nullptr)
+                flags |= ImGuiInputTextFlags_ReadOnly;
+
             ImGui::Text("Selected Object: %s", selectedObjectName.c_str());
-            ImGui::InputFloat3("Position", &selectedObjectPosition[0]);
-            ImGui::InputFloat3("Rotation", &selectedObjectRotation[0]);
+
+            if (ImGui::InputFloat3("Position", &selectedObjectPosition[0], "%.3f", flags))
+                applySelectedObjectsEdits();
+
+            if (ImGui::InputFloat3("Rotation", &selectedObjectRotation[0], "%.3f", flags))
+                applySelectedObjectsEdits();
         }
         ImGui::End();
 
@@ -156,6 +167,13 @@ void EditorUI::SetupLayout()
             ImGui::Text("FPS: %i", Engine::GetInstance().GetFPS());
             ImGui::Text("Average FPS: %i", Engine::GetInstance().GetAverageFPS());
             ImGui::Text("Elements: %i", Engine::GetInstance().GetGameObjectsCount());
+        }
+        ImGui::End();
+
+        // Tree view
+        ImGui::Begin("Hierarchy");
+        {
+            drawGameObjectsTree();
         }
         ImGui::End();
 
@@ -171,7 +189,6 @@ void EditorUI::SetupLayout()
                 ImGui::GetIO().WantCaptureMouse = false;
                 ImGui::GetIO().WantCaptureKeyboard = false;
             }
-
         }
         ImGui::End();
 
@@ -187,7 +204,6 @@ void EditorUI::SetupLayout()
                 ImGui::GetIO().WantCaptureMouse = false;
                 ImGui::GetIO().WantCaptureKeyboard = false;
             }
-
         }
         ImGui::End();
     }
@@ -198,7 +214,7 @@ void EditorUI::NotImplementedWarning()
     EXPECT_ERROR(1, "This functionality is not implemented");
 }
 
-void EditorUI::fillAssets(const std::string& path, std::vector<Asset> *assets)
+void EditorUI::fillAssets(const std::string &path, std::vector<Asset> *assets)
 {
     std::string category = path.substr(path.find_last_of('/') + 1);
 
@@ -234,7 +250,7 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
             const ImVec2 &pos = ImGui::GetCursorScreenPos();
             ImGui::GetWindowDrawList()->AddRectFilled(
                 {pos.x - 2, pos.y},
-                {pos.x + ImGui::GetContentRegionAvail().x + 8, pos.y + 120},
+                {pos.x + ImGui::GetContentRegionAvail().x + 8, pos.y + 70},
                 IM_COL32(0, 100, 255, 100)
             );
         }
@@ -272,6 +288,12 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
         if (ImGui::IsItemClicked())
         {
             SelectedAsset = &asset;
+
+            if (SelectedGameObject)
+            {
+                delete SelectedGameObject;
+                SelectedGameObject = nullptr;
+            }
         }
 
         // Center text
@@ -303,7 +325,8 @@ void EditorUI::HandleCameraStateUpdates(int num)
 {
     EXPECT_ERROR(num >= cameras.size(), "Camera index is out of range");
 
-    if (renderHovered[num]) {
+    if (renderHovered[num])
+    {
         cameras[num]->Update();
     }
 }
@@ -312,4 +335,103 @@ void EditorUI::UpdateCamerasStates()
 {
     for (int i = 0; i < cameras.size(); i++)
         HandleCameraStateUpdates(i);
+}
+
+void EditorUI::drawGameObjectsTree(GameObject *parent)
+{
+    for (GameObject *gameObject: *gameObjects)
+    {
+        ImGui::PushID(&gameObject);
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_SpanFullWidth;
+
+        if (gameObject == SelectedGameObject)
+            flags |= ImGuiTreeNodeFlags_Selected;
+
+        ImGui::TreeNodeEx(gameObject->GetName().c_str(), flags);
+
+        if (ImGui::IsItemClicked())
+        {
+            Model* model = dynamic_cast<Model*>(gameObject);
+
+            if (model)
+            {
+                if (SelectedGameObject)
+                    dynamic_cast<Model*>(SelectedGameObject)->ColliderShape->SetColor(Color::Cyan());
+
+                model->ColliderShape->SetColor(Color::Magenta());
+                SelectedGameObject = gameObject;
+                editModeInitialPosition = model->GetPosition();
+                editModeInitialRotation = model->GetRotation();
+                SetEditMode(true);
+            }
+        }
+
+        ImGui::PopID();
+    }
+}
+
+void EditorUI::UpdateSelectedObjectProperties()
+{
+    if (SelectedGameObject != nullptr)
+    {
+        GameObject3D* gameObject = dynamic_cast<GameObject3D*>(SelectedGameObject);
+        Vector3 pos = gameObject->GetPosition();
+        Euler rot = gameObject->GetRotation();
+
+        selectedObjectName = SelectedGameObject->GetName();
+
+        selectedObjectPosition[0] = pos.x;
+        selectedObjectPosition[1] = pos.y;
+        selectedObjectPosition[2] = pos.z;
+
+        selectedObjectRotation[0] = rot.Pitch();
+        selectedObjectRotation[1] = rot.Yaw();
+        selectedObjectRotation[2] = rot.Roll();
+    }
+    else
+    {
+        selectedObjectName = "None";
+
+        selectedObjectPosition[0] = 0;
+        selectedObjectPosition[1] = 0;
+        selectedObjectPosition[2] = 0;
+
+        selectedObjectRotation[0] = 0;
+        selectedObjectRotation[1] = 0;
+        selectedObjectRotation[2] = 0;
+    }
+}
+
+void EditorUI::applySelectedObjectsEdits()
+{
+    if (SelectedGameObject != nullptr)
+    {
+        GameObject3D *gameObject = dynamic_cast<GameObject3D *>(SelectedGameObject);
+//        gameObject->SetPosition({selectedObjectPosition[0], selectedObjectPosition[1], selectedObjectPosition[2]});
+        gameObject->SetRotation({selectedObjectRotation[0], selectedObjectRotation[1], selectedObjectRotation[2]});
+    }
+}
+
+void EditorUI::SetEditMode(bool editMode)
+{
+    EXPECT_ERROR(editMode && !SelectedGameObject, "Can't enter edit mode. No object is selected.");
+    this->editMode = editMode;
+
+    if (!editMode)
+    {
+        Model* model = dynamic_cast<Model*>(SelectedGameObject);
+        EXPECT_ERROR(!model, "Can't exit edit mode, selected object is not a model");
+        model->ColliderShape->SetColor(Color::Cyan());
+        model->SetPosition(editModeInitialPosition);
+        model->SetRotation(editModeInitialRotation);
+        SelectedGameObject = nullptr;
+    }
+
+    if (editMode)
+    {
+        Model* model = dynamic_cast<Model*>(SelectedGameObject);
+        EXPECT_ERROR(!model, "Can't enter edit mode, selected object is not a model");
+        model->ColliderShape->SetColor(Color::Magenta());
+    }
+
 }

@@ -22,21 +22,6 @@ void Game::Run()
 {
     IsometricCamera camera;
 
-    int size = 10;
-    int tileSize = 4;
-    std::vector<std::vector<Model*>> floorTiles(size, std::vector<Model*>(size));
-
-    for (int i = 0; i < size; i++)
-    {
-        for (int j = 0; j < size; j++)
-        {
-            floorTiles[i][j] = new Model("Assets/Models/LevelParts/floor_tile_large.gltf.glb");
-            floorTiles[i][j]->SetPosition(i * tileSize, 0, j * tileSize);
-        }
-    }
-
-    Model *player = new Model("Assets/Models/Characters/Knight.glb");
-
     while (engine->IsRunning())
     {
         /***************************************************/

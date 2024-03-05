@@ -19,7 +19,6 @@ private:
     FreeMoveCamera *freeMoveCamera = nullptr;
     RayCast3D *isometricCameraMouseRayCast = nullptr;
     std::vector <Model*> levelObjects;
-    Model *activePlaceableObject = nullptr;
     int floor = 0;
 
     void init();
