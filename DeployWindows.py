@@ -1,7 +1,17 @@
-# Run ldd on project executable and copy libraries to deploy folder
 import os
 import shutil
 import re
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 
 # Find project version in CMakeLists.txt
@@ -61,7 +71,7 @@ def find_executables(project_name):
                 executable_path = os.path.join(os.getcwd(), file)
 
         if len(executable_path) > 0:
-            print("Executable found: " + executable_path)
+            print(bcolors.WARNING + "Executable found: " + executable_path + bcolors.ENDC)
             executables.append(executable_path)
 
     return executables
@@ -70,7 +80,7 @@ def find_executables(project_name):
 executables = find_executables(find_project_name())
 
 if len(executables) == 0:
-    print("No executable found!")
+    print(bcolors.FAIL + "No executable found!" + bcolors.ENDC)
     exit(1)
 
 # Path to the deploy folder
@@ -78,7 +88,7 @@ deploy_folder = "./Deploy/" + project_version + "/"
 
 # Delete folder if exists
 if os.path.exists(deploy_folder):
-    print("Deploy folder exists: " + deploy_folder + ", deleting...")
+    print(bcolors.WARNING + "Deploy folder exists: " + deploy_folder + ", deleting..." + bcolors.ENDC)
     shutil.rmtree(deploy_folder)
 
 # Create deploy folder
@@ -101,13 +111,13 @@ for executable_path in executables:
                 # Append if the library not from Windows folder or related to Visual C++
                 if not library_path.startswith("C:/Windows") or "msvc" in library_path or "VCRUNTIME" in library_path:
                     library_paths.append(library_path)
-                    print("Library found: " + library_path)
+                    print(bcolors.WARNING + "Library found: " + library_path)
             else:
-                print("Library not found: " + line.split("=>")[0].strip())
+                print(bcolors.FAIL + "Library not found: " + line.split("=>")[0].strip())
 
     # Copy the libraries to the deploy folder
     for library_path in library_paths:
-        print("Copying library: " + library_path + " to deploy folder: " + deploy_folder)
+        print(bcolors.OKGREEN + "Copying library: " + library_path + " to deploy folder: " + deploy_folder + bcolors.ENDC)
         shutil.copy(library_path, deploy_folder)
 
     # Copy the executable to the deploy folder
@@ -119,17 +129,17 @@ allowed_types = ["ini"]
 for file in os.listdir(os.getcwd()):
     for allowed_type in allowed_types:
         if file.endswith(allowed_type):
-            print("Copying allowed file: " + file + " to deploy folder: " + deploy_folder)
+            print(bcolors.OKBLUE + "Copying allowed file: " + file + " to deploy folder: " + deploy_folder + bcolors.ENDC)
             shutil.copy(file, deploy_folder)
 
 # Copy assets folder if exists
 if os.path.exists("./Assets/"):
-    print("Copying assets folder to deploy folder: " + deploy_folder)
+    print(bcolors.OKCYAN + "Copying assets folder to deploy folder: " + deploy_folder + bcolors.ENDC)
     shutil.copytree("./Assets/", deploy_folder + "/Assets/")
 
 # Copy shaders binaries files if exists
 if os.path.exists("./Shaders/"):
-    print("Copying shaders binaries files to deploy folder: " + deploy_folder)
+    print(bcolors.OKGREEN + "Copying shaders binaries files to deploy folder: " + deploy_folder + bcolors.ENDC)
     shutil.copytree("./Shaders/", deploy_folder + "/Shaders/")
     # shutil.copytree("./Shaders/", deploy_folder + "/Shaders/", ignore=ignore_shader_sources)
 
