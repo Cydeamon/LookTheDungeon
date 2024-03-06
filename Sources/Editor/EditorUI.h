@@ -65,6 +65,7 @@ private:
     bool prevStickToGrid = false;
     bool prevShowGrid = false;
     bool prevShowAxis = false;
+    bool prevDrawCollisionShapes = true;
     std::string selectedObjectName = "None";
     float selectedObjectPosition[3] = {0, 0, 0};
     float selectedObjectRotation[3] = {0, 0, 0};
@@ -74,4 +75,5 @@ private:
     std::vector<bool> renderHovered;
     std::vector<GameObject*> *gameObjects;
     bool editMode = false;
+    void readConfig();
 };

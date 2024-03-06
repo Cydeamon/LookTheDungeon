@@ -23,6 +23,11 @@ void Editor::init()
     Engine::GetInstance().SetEngineMode(EngineMode::MODE_3D);
     Engine::GetInstance().SetWindowMaximized();
 
+    // Load configuration
+    Config::GetInstance().SetIniFileName("LookTheDungeonEditor.ini");
+    Config::GetInstance().SetSaveOnValuesChange(true);
+    Config::GetInstance().Load();
+
     // Initialize editor
     isometricCameraMouseRayCast = new RayCast3D();
     isometricCameraMouseRayCast->EnableDebugDraw(true);

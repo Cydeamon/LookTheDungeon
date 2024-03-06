@@ -13,8 +13,9 @@ EditorUI::EditorUI()
     fillAssets("Assets/Models/Characters", &characters);
 
     renderHovered.resize(2);
-
     gameObjects = Engine::GetInstance().GetGameObjects();
+
+    readConfig();
 }
 
 EditorUI::~EditorUI() = default;
@@ -133,13 +134,21 @@ void EditorUI::SetupLayout()
             if (ShowGrid != prevShowGrid)
             {
                 Engine::GetInstance().SetDrawGrid(ShowGrid);
+                Config::GetInstance().SetValue("EditorUI", "ShowGrid", ShowGrid);
                 prevShowGrid = ShowGrid;
             }
 
             if (ShowAxis != prevShowAxis)
             {
                 Engine::GetInstance().SetDrawAxisLines(ShowAxis);
+                Config::GetInstance().SetValue("EditorUI", "ShowAxis", ShowAxis);
                 prevShowAxis = ShowAxis;
+            }
+
+            if (DrawCollisionShapes != prevDrawCollisionShapes)
+            {
+                Config::GetInstance().SetValue("EditorUI", "DrawCollisionShapes", DrawCollisionShapes);
+                prevDrawCollisionShapes = DrawCollisionShapes;
             }
         }
         ImGui::End();
@@ -498,4 +507,18 @@ void EditorUI::RestoreTransforms()
         model->SetPosition(editModeInitialPosition);
         model->SetRotation(editModeInitialRotation);
     }
+}
+
+void EditorUI::readConfig()
+{
+    DrawCollisionShapes = Config::GetInstance().GetValue<bool>("EditorUI", "DrawCollisionShapes");
+    prevDrawCollisionShapes = DrawCollisionShapes;
+
+    ShowAxis = Config::GetInstance().GetValue<bool>("EditorUI", "ShowAxis");
+    prevShowAxis = ShowAxis;
+    Engine::GetInstance().SetDrawAxisLines(ShowAxis);
+
+    ShowGrid = Config::GetInstance().GetValue<bool>("EditorUI", "ShowGrid");
+    prevShowGrid = ShowGrid;
+    Engine::GetInstance().SetDrawGrid(ShowGrid);
 }
