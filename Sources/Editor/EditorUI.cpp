@@ -351,6 +351,7 @@ void EditorUI::drawGameObjectsTree(GameObject *parent)
             if (gameObject == SelectedGameObject)
                 flags |= ImGuiTreeNodeFlags_Selected;
 
+            ImGui::PushID(gameObject);
             if (ImGui::TreeNodeEx(gameObject->GetName().c_str(), flags))
             {
                 if (ImGui::IsItemHovered())
@@ -381,6 +382,7 @@ void EditorUI::drawGameObjectsTree(GameObject *parent)
 
                 ImGui::TreePop();
             }
+            ImGui::PopID();
         }
     }
 }
