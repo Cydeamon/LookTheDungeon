@@ -41,9 +41,11 @@ public:
     bool ShowGrid = true;
     bool ShowAxis = true;
     bool DrawCollisionShapes = true;
+    bool MoveWithMouse = false;
     float StickyGridSize[2] = {1, 1};
     float StickyGridOffset[2] = {0.5, 0.5};
 
+    void RestoreTransforms();
 private:
 
     EditorUI();

@@ -20,9 +20,8 @@ void Editor::init()
     // Initialize engine
     Engine::GetInstance().SetDrawSceneToPrimaryFramebuffer(false);
     Engine::GetInstance().Init();
-    Engine::GetInstance().SetWindowMaximized();
     Engine::GetInstance().SetEngineMode(EngineMode::MODE_3D);
-    Engine::GetInstance().CenterWindow();
+    Engine::GetInstance().SetWindowMaximized();
 
     // Initialize editor
     isometricCameraMouseRayCast = new RayCast3D();
@@ -82,10 +81,17 @@ void Editor::handleInput()
                 if (selectedObject)
                 {
                     levelObjects.push_back(selectedObject);
-                    selectedObject->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
-                    EditorUI::GetInstance().SelectedGameObject = nullptr;
                     EditorUI::GetInstance().UpdateSelectedObjectProperties();
+
+                    if (!EditorUI::GetInstance().IsEditMode())
+                    {
+                        selectedObject->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
+                        EditorUI::GetInstance().SelectedGameObject = nullptr;
+                    }
                 }
+
+                if (EditorUI::GetInstance().IsEditMode())
+                    EditorUI::GetInstance().MoveWithMouse = false;
             }
         }
 
@@ -101,6 +107,7 @@ void Editor::handleInput()
                 erase_if(levelObjects, [](GameObject* obj){ return obj == EditorUI::GetInstance().SelectedGameObject; });
                 delete EditorUI::GetInstance().SelectedGameObject;
                 EditorUI::GetInstance().SelectedGameObject = nullptr;
+                EditorUI::GetInstance().SetEditMode(false);
             }
         }
 
@@ -114,6 +121,12 @@ void Editor::handleInput()
                 EditorUI::GetInstance().SelectedGameObject = nullptr;
                 EditorUI::GetInstance().SelectedAsset = nullptr;
             }
+        }
+
+        if (Input::IsJustPressed(G) && EditorUI::GetInstance().IsEditMode())
+        {
+            EditorUI::GetInstance().RestoreTransforms();
+            EditorUI::GetInstance().MoveWithMouse = !EditorUI::GetInstance().MoveWithMouse;
         }
     }
 }
@@ -138,7 +151,7 @@ void Editor::handleSelectedAssetPlacement()
         }
 
         // Adjust active object position
-        if (selectedObject != nullptr)
+        if (selectedObject != nullptr && EditorUI::GetInstance().MoveWithMouse)
         {
             Vector3 pos = isometricCameraMouseRayCast->GetStopPosition();
 

@@ -177,6 +177,35 @@ void EditorUI::SetupLayout()
         }
         ImGui::End();
 
+        // Tutorial window
+        ImGui::Begin("Tutorial");
+        {
+            if (editMode)
+            {
+                ImGui::Text(
+                    "[G]           Move object\n"
+                    "[Esc]         Cancel edits\n"
+                    "[LMB]         Apply new position\n"
+                    "[RMB + Wheel] Change floor height\n"
+                    "[Del]         Delete selected object\n"
+                );
+            }
+            else
+            if (!SelectedGameObject)
+            {
+                ImGui::Text(
+                    "[LMB]         Select object for editing\n"
+                );
+            }
+            else
+            {
+                ImGui::Text(
+                    "[LMB]         Apply new position\n"
+                );
+            }
+        }
+        ImGui::End();
+
         // Render window
         cameras[0]->SetMainCamera(true);
         ImGui::Begin("Render");
@@ -288,6 +317,7 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
         if (ImGui::IsItemClicked())
         {
             SelectedAsset = &asset;
+            MoveWithMouse = true;
 
             if (SelectedGameObject)
             {
@@ -363,7 +393,7 @@ void EditorUI::drawGameObjectsTree(GameObject *parent)
 
                 if (ImGui::IsItemClicked())
                 {
-                    Model* model = dynamic_cast<Model*>(gameObject);
+                    Model *model = dynamic_cast<Model *>(gameObject);
 
                     if (model)
                     {
@@ -376,10 +406,11 @@ void EditorUI::drawGameObjectsTree(GameObject *parent)
                         editModeInitialRotation = model->GetRotation();
                         SetEditMode(true);
                     }
+
+                    MoveWithMouse = false;
                 }
 
                 drawGameObjectsTree(gameObject);
-
                 ImGui::TreePop();
             }
             ImGui::PopID();
@@ -391,7 +422,7 @@ void EditorUI::UpdateSelectedObjectProperties()
 {
     if (SelectedGameObject != nullptr)
     {
-        GameObject3D* gameObject = dynamic_cast<GameObject3D*>(SelectedGameObject);
+        GameObject3D *gameObject = dynamic_cast<GameObject3D *>(SelectedGameObject);
         Vector3 pos = gameObject->GetPosition();
         Euler rot = gameObject->GetRotation();
 
@@ -436,19 +467,32 @@ void EditorUI::SetEditMode(bool editMode)
 
     if (!editMode)
     {
-        Model* model = dynamic_cast<Model*>(SelectedGameObject);
-        EXPECT_ERROR(!model, "Can't exit edit mode, selected object is not a model");
-        model->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
-        model->SetPosition(editModeInitialPosition);
-        model->SetRotation(editModeInitialRotation);
+        Model *model = dynamic_cast<Model *>(SelectedGameObject);
+
+        if (model)
+        {
+            model->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
+            model->SetPosition(editModeInitialPosition);
+            model->SetRotation(editModeInitialRotation);
+        }
+
         SelectedGameObject = nullptr;
     }
 
     if (editMode)
     {
-        Model* model = dynamic_cast<Model*>(SelectedGameObject);
+        Model *model = dynamic_cast<Model *>(SelectedGameObject);
         EXPECT_ERROR(!model, "Can't enter edit mode, selected object is not a model");
         model->GetChildren<Cube>()[0]->SetColor(Color::Magenta());
     }
+}
 
+void EditorUI::RestoreTransforms()
+{
+    if (SelectedGameObject && editMode)
+    {
+        Model *model = dynamic_cast<Model *>(SelectedGameObject);
+        model->SetPosition(editModeInitialPosition);
+        model->SetRotation(editModeInitialRotation);
+    }
 }
