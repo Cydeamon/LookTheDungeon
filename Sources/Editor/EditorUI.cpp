@@ -195,12 +195,14 @@ void EditorUI::SetupLayout()
             {
                 ImGui::Text(
                     "[LMB]         Select object for editing\n"
+                    "[RMB + Wheel] Change floor height\n"
                 );
             }
             else
             {
                 ImGui::Text(
                     "[LMB]         Apply new position\n"
+                    "[RMB + Wheel] Change floor height\n"
                 );
             }
         }
@@ -457,6 +459,7 @@ void EditorUI::applySelectedObjectsEdits()
         GameObject3D *gameObject = dynamic_cast<GameObject3D *>(SelectedGameObject);
 //        gameObject->SetPosition({selectedObjectPosition[0], selectedObjectPosition[1], selectedObjectPosition[2]});
         gameObject->SetRotation({selectedObjectRotation[0], selectedObjectRotation[1], selectedObjectRotation[2]});
+        PrevObjectRotation = gameObject->GetRotation();
     }
 }
 

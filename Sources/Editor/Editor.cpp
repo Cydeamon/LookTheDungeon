@@ -144,7 +144,7 @@ void Editor::handleSelectedAssetPlacement()
         if (selectedObject == nullptr && EditorUI::GetInstance().SelectedAsset != nullptr)
         {
             selectedObject = new Model(EditorUI::GetInstance().SelectedAsset->path);
-            selectedObject->SetRotation({0, -90, 0});
+            selectedObject->SetRotation(EditorUI::GetInstance().PrevObjectRotation);
             selectedObject->GenerateBoxCollider();
             selectedObject->GetChildren<Cube>()[0]->SetColor(Color::Magenta());
             EditorUI::GetInstance().SelectedGameObject = selectedObject;

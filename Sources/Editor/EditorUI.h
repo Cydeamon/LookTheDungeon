@@ -44,6 +44,7 @@ public:
     bool MoveWithMouse = false;
     float StickyGridSize[2] = {1, 1};
     float StickyGridOffset[2] = {0.5, 0.5};
+    Euler PrevObjectRotation = Euler(0, -90, 0);
 
     void RestoreTransforms();
 private:
