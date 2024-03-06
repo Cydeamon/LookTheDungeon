@@ -82,7 +82,7 @@ void Editor::handleInput()
                 if (selectedObject)
                 {
                     levelObjects.push_back(selectedObject);
-                    selectedObject->ColliderShape->SetColor(Color::Cyan());
+                    selectedObject->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
                     EditorUI::GetInstance().SelectedGameObject = nullptr;
                     EditorUI::GetInstance().UpdateSelectedObjectProperties();
                 }
@@ -133,7 +133,7 @@ void Editor::handleSelectedAssetPlacement()
             selectedObject = new Model(EditorUI::GetInstance().SelectedAsset->path);
             selectedObject->SetRotation({0, -90, 0});
             selectedObject->GenerateBoxCollider();
-            selectedObject->ColliderShape->SetColor(Color::Magenta());
+            selectedObject->GetChildren<Cube>()[0]->SetColor(Color::Magenta());
             EditorUI::GetInstance().SelectedGameObject = selectedObject;
         }
 

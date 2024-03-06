@@ -356,9 +356,9 @@ void EditorUI::drawGameObjectsTree(GameObject *parent)
             if (model)
             {
                 if (SelectedGameObject)
-                    dynamic_cast<Model*>(SelectedGameObject)->ColliderShape->SetColor(Color::Cyan());
+                    SelectedGameObject->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
 
-                model->ColliderShape->SetColor(Color::Magenta());
+                model->GetChildren<Cube>()[0]->SetColor(Color::Magenta());
                 SelectedGameObject = gameObject;
                 editModeInitialPosition = model->GetPosition();
                 editModeInitialRotation = model->GetRotation();
@@ -421,7 +421,7 @@ void EditorUI::SetEditMode(bool editMode)
     {
         Model* model = dynamic_cast<Model*>(SelectedGameObject);
         EXPECT_ERROR(!model, "Can't exit edit mode, selected object is not a model");
-        model->ColliderShape->SetColor(Color::Cyan());
+        model->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
         model->SetPosition(editModeInitialPosition);
         model->SetRotation(editModeInitialRotation);
         SelectedGameObject = nullptr;
@@ -431,7 +431,7 @@ void EditorUI::SetEditMode(bool editMode)
     {
         Model* model = dynamic_cast<Model*>(SelectedGameObject);
         EXPECT_ERROR(!model, "Can't enter edit mode, selected object is not a model");
-        model->ColliderShape->SetColor(Color::Magenta());
+        model->GetChildren<Cube>()[0]->SetColor(Color::Magenta());
     }
 
 }
