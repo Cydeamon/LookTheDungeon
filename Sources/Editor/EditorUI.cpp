@@ -341,32 +341,47 @@ void EditorUI::drawGameObjectsTree(GameObject *parent)
 {
     for (GameObject *gameObject: *gameObjects)
     {
-        ImGui::PushID(&gameObject);
-        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_SpanFullWidth;
-
-        if (gameObject == SelectedGameObject)
-            flags |= ImGuiTreeNodeFlags_Selected;
-
-        ImGui::TreeNodeEx(gameObject->GetName().c_str(), flags);
-
-        if (ImGui::IsItemClicked())
+        if (gameObject->GetParent() == parent)
         {
-            Model* model = dynamic_cast<Model*>(gameObject);
+            ImGuiTreeNodeFlags flags = 0;
 
-            if (model)
+            if (gameObject->GetChildren<GameObject3D>().size() == 0)
+                flags |= ImGuiTreeNodeFlags_Leaf;
+
+            if (gameObject == SelectedGameObject)
+                flags |= ImGuiTreeNodeFlags_Selected;
+
+            if (ImGui::TreeNodeEx(gameObject->GetName().c_str(), flags))
             {
-                if (SelectedGameObject)
-                    SelectedGameObject->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
+                if (ImGui::IsItemHovered())
+                {
+                    ImGui::BeginTooltip();
+                    ImGui::Text("%s", gameObject->GetName().c_str());
+                    ImGui::EndTooltip();
+                }
 
-                model->GetChildren<Cube>()[0]->SetColor(Color::Magenta());
-                SelectedGameObject = gameObject;
-                editModeInitialPosition = model->GetPosition();
-                editModeInitialRotation = model->GetRotation();
-                SetEditMode(true);
+                if (ImGui::IsItemClicked())
+                {
+                    Model* model = dynamic_cast<Model*>(gameObject);
+
+                    if (model)
+                    {
+                        if (SelectedGameObject)
+                            SelectedGameObject->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
+
+                        model->GetChildren<Cube>()[0]->SetColor(Color::Magenta());
+                        SelectedGameObject = gameObject;
+                        editModeInitialPosition = model->GetPosition();
+                        editModeInitialRotation = model->GetRotation();
+                        SetEditMode(true);
+                    }
+                }
+
+                drawGameObjectsTree(gameObject);
+
+                ImGui::TreePop();
             }
         }
-
-        ImGui::PopID();
     }
 }
 
