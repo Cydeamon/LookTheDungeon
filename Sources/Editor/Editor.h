@@ -19,6 +19,7 @@ private:
     FreeMoveCamera *freeMoveCamera = nullptr;
     RayCast3D *isometricCameraMouseRayCast = nullptr;
     std::vector <Model*> levelObjects;
+    ColliderCube *hoveredCollider = nullptr;
     int floor = 0;
 
     void init();

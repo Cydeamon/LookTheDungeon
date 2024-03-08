@@ -42,7 +42,6 @@ void Editor::init()
 
     EditorUI::GetInstance().AddCamera(isometricCamera);
     EditorUI::GetInstance().AddCamera(freeMoveCamera);
-
 }
 
 void Editor::Run()
@@ -77,14 +76,19 @@ void Editor::handleInput()
 
     if (EditorUI::GetInstance().IsMainRenderWindowIsHovered())
     {
+        /*****************************************************************************/
+        /*****************  Check buttons input (mouse and keyboard)  ****************/
+        /*****************************************************************************/
+
         if (Input::IsJustPressed(MouseButton::LEFT))
         {
             if (EditorUI::GetInstance().SelectedGameObject)
             {
-                Model* selectedObject = dynamic_cast<Model*>(EditorUI::GetInstance().SelectedGameObject);
+                Model *selectedObject = dynamic_cast<Model *>(EditorUI::GetInstance().SelectedGameObject);
 
                 if (selectedObject)
                 {
+                    selectedObject->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(true);
                     levelObjects.push_back(selectedObject);
                     EditorUI::GetInstance().UpdateSelectedObjectProperties();
 
@@ -98,6 +102,18 @@ void Editor::handleInput()
                 if (EditorUI::GetInstance().IsEditMode())
                     EditorUI::GetInstance().MoveWithMouse = false;
             }
+
+            if (hoveredCollider && !EditorUI::GetInstance().IsEditMode())
+            {
+                GameObject *obj = hoveredCollider->GetParent();
+
+                if (obj)
+                {
+                    EditorUI::GetInstance().SelectedGameObject = hoveredCollider->GetParent();
+                    EditorUI::GetInstance().SetEditMode(true);
+                    hoveredCollider = nullptr;
+                }
+            }
         }
 
         if (Input::IsPressed(MouseButton::RIGHT) && Input::IsJustPressed(SCROLL_UP))
@@ -109,7 +125,7 @@ void Editor::handleInput()
         {
             if (EditorUI::GetInstance().IsEditMode())
             {
-                erase_if(levelObjects, [](GameObject* obj){ return obj == EditorUI::GetInstance().SelectedGameObject; });
+                erase_if(levelObjects, [](GameObject *obj) { return obj == EditorUI::GetInstance().SelectedGameObject; });
                 delete EditorUI::GetInstance().SelectedGameObject;
                 EditorUI::GetInstance().SelectedGameObject = nullptr;
                 EditorUI::GetInstance().SetEditMode(false);
@@ -126,12 +142,47 @@ void Editor::handleInput()
                 EditorUI::GetInstance().SelectedGameObject = nullptr;
                 EditorUI::GetInstance().SelectedAsset = nullptr;
             }
+
+            EditorUI::GetInstance().MoveWithMouse = false;
         }
 
         if (Input::IsJustPressed(G) && EditorUI::GetInstance().IsEditMode())
         {
-            EditorUI::GetInstance().RestoreTransforms();
+            Model *selectedObject = dynamic_cast<Model *>(EditorUI::GetInstance().SelectedGameObject);
+
+            if (selectedObject)
+                selectedObject->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(true);
+
+            if (EditorUI::GetInstance().MoveWithMouse)
+                EditorUI::GetInstance().RestoreTransforms();
+            else
+                EditorUI::GetInstance().RememberTransforms();
+
             EditorUI::GetInstance().MoveWithMouse = !EditorUI::GetInstance().MoveWithMouse;
+        }
+
+        /*****************************************************************************/
+        /***************************  Check mouse hovers  ****************************/
+        /*****************************************************************************/
+
+        if (hoveredCollider )
+        {
+            if (hoveredCollider != EditorUI::GetInstance().SelectedGameObject)
+                hoveredCollider->SetColor(Color::Cyan());
+
+            hoveredCollider = nullptr;
+        }
+
+        if (!EditorUI::GetInstance().IsEditMode() && !EditorUI::GetInstance().MoveWithMouse)
+        {
+            if (Collider3D *collider = isometricCameraMouseRayCast->GetCollidedObject())
+            {
+                if (ColliderCube *colliderCube = dynamic_cast<ColliderCube *>(collider))
+                {
+                    colliderCube->SetColor(Color::Orange());
+                    hoveredCollider = colliderCube;
+                }
+            }
         }
     }
 }
@@ -141,7 +192,7 @@ void Editor::handleSelectedAssetPlacement()
     isometricCameraMouseRayCast->StopAtY(EditorUI::GetInstance().FloorHeight);
     isometricCamera->PerformMouseRayCast();
 
-    Model* selectedObject = dynamic_cast<Model*>(EditorUI::GetInstance().SelectedGameObject);
+    Model *selectedObject = dynamic_cast<Model *>(EditorUI::GetInstance().SelectedGameObject);
 
     if (!EditorUI::GetInstance().SelectedGameObject || (selectedObject && EditorUI::GetInstance().SelectedGameObject))
     {
@@ -152,12 +203,14 @@ void Editor::handleSelectedAssetPlacement()
             selectedObject->SetRotation(EditorUI::GetInstance().PrevObjectRotation);
             selectedObject->GenerateBoxCollider();
             selectedObject->GetChildren<Cube>()[0]->SetColor(Color::Magenta());
+            selectedObject->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(false);
             EditorUI::GetInstance().SelectedGameObject = selectedObject;
         }
 
         // Adjust active object position
         if (selectedObject != nullptr && EditorUI::GetInstance().MoveWithMouse)
         {
+            selectedObject->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(false);
             Vector3 pos = isometricCameraMouseRayCast->GetStopPosition();
 
             if (EditorUI::GetInstance().StickToGrid)

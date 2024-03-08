@@ -43,10 +43,11 @@ public:
     bool DrawCollisionShapes = true;
     bool MoveWithMouse = false;
     float StickyGridSize[2] = {1, 1};
-    float StickyGridOffset[2] = {0.5, 0.5};
+    float StickyGridOffset[2] = {0, 0};
     Euler PrevObjectRotation = Euler(0, -90, 0);
 
     void RestoreTransforms();
+    void RememberTransforms();
 private:
 
     EditorUI();

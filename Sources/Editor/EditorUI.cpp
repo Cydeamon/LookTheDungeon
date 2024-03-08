@@ -199,8 +199,7 @@ void EditorUI::SetupLayout()
                     "[Del]         Delete selected object\n"
                 );
             }
-            else
-            if (!SelectedGameObject)
+            else if (!SelectedGameObject)
             {
                 ImGui::Text(
                     "[LMB]         Select object for editing\n"
@@ -411,10 +410,11 @@ void EditorUI::drawGameObjectsTree(GameObject *parent)
                         if (SelectedGameObject)
                             SelectedGameObject->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
 
-                        model->GetChildren<Cube>()[0]->SetColor(Color::Magenta());
+                        model->GetChildren<ColliderCube>()[0]->SetColor(Color::Magenta());
+                        model->GetChildren<ColliderCube>()[0]->SetDiscoverableByRayCast(false);
+
                         SelectedGameObject = gameObject;
-                        editModeInitialPosition = model->GetPosition();
-                        editModeInitialRotation = model->GetRotation();
+                        RememberTransforms();
                         SetEditMode(true);
                     }
 
@@ -484,10 +484,16 @@ void EditorUI::SetEditMode(bool editMode)
         if (model)
         {
             model->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
-            model->SetPosition(editModeInitialPosition);
-            model->SetRotation(editModeInitialRotation);
+            model->GetChildren<ColliderCube>()[0]->SetDiscoverableByRayCast(true);
+
+            if (MoveWithMouse)
+            {
+                model->SetPosition(editModeInitialPosition);
+                model->SetRotation(editModeInitialRotation);
+            }
         }
 
+        MoveWithMouse = false;
         SelectedGameObject = nullptr;
     }
 
@@ -496,6 +502,7 @@ void EditorUI::SetEditMode(bool editMode)
         Model *model = dynamic_cast<Model *>(SelectedGameObject);
         EXPECT_ERROR(!model, "Can't enter edit mode, selected object is not a model");
         model->GetChildren<Cube>()[0]->SetColor(Color::Magenta());
+        model->GetChildren<ColliderCube>()[0]->SetDiscoverableByRayCast(false);
     }
 }
 
@@ -521,4 +528,15 @@ void EditorUI::readConfig()
     ShowGrid = Config::GetInstance().GetValue<bool>("EditorUI", "ShowGrid");
     prevShowGrid = ShowGrid;
     Engine::GetInstance().SetDrawGrid(ShowGrid);
+}
+
+void EditorUI::RememberTransforms()
+{
+    Model *model = dynamic_cast<Model *>(SelectedGameObject);
+
+    if (model)
+    {
+        editModeInitialPosition = model->GetPosition();
+        editModeInitialRotation = model->GetRotation();
+    }
 }
