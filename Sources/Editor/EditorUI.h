@@ -45,6 +45,7 @@ public:
     float StickyGridSize[2] = {1, 1};
     float StickyGridOffset[2] = {0, 0};
     Euler PrevObjectRotation = Euler(0, -90, 0);
+    bool RotationMode = false;
 
     void RestoreTransforms();
     void RememberTransforms();

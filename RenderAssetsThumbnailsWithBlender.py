@@ -21,7 +21,7 @@ for model_dir in models_directories:
                 # Center camera on the object
                 bpy.ops.view3d.camera_to_view_selected()
 
-                # Save the render in jpg format
+                # Save the render in png format
                 bpy.context.scene.render.filepath = working_dir + previews_output_dir + "/" + categoryName + "/" + file.replace(".gltf.glb", ".png")
                 bpy.context.scene.render.filepath = bpy.context.scene.render.filepath.replace(".glb", ".png")
                 bpy.ops.render.render(write_still = True)

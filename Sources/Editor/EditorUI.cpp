@@ -189,14 +189,23 @@ void EditorUI::SetupLayout()
         // Tutorial window
         ImGui::Begin("Tutorial");
         {
-            if (editMode)
+            if (RotationMode)
+            {
+                ImGui::Text(
+                    "[Esc]         Cancel rotation\n"
+                    "[Mouse]       Rotate object\n"
+                    "[CTRL+Mouse]  Rotate object with 22.5deg increments\n"
+                );
+            }
+            else if (editMode)
             {
                 ImGui::Text(
                     "[G]           Move object\n"
-                    "[Esc]         Cancel edits\n"
+                    "[R]           Rotate object\n"
                     "[LMB]         Apply new position\n"
                     "[RMB + Wheel] Change floor height\n"
                     "[Del]         Delete selected object\n"
+                    "[Esc]         Cancel edits\n"
                 );
             }
             else if (!SelectedGameObject)
@@ -211,6 +220,7 @@ void EditorUI::SetupLayout()
                 ImGui::Text(
                     "[LMB]         Apply new position\n"
                     "[RMB + Wheel] Change floor height\n"
+                    "[Esc]         Cancel edits\n"
                 );
             }
         }
@@ -332,7 +342,10 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
             if (SelectedGameObject)
             {
                 if (!IsEditMode())
+                {
                     delete SelectedGameObject;
+                    SelectedGameObject = nullptr;
+                }
 
                 if (SelectedGameObject)
                 {
@@ -424,7 +437,6 @@ void EditorUI::drawGameObjectsTree(GameObject *parent)
                         if (SelectedGameObject)
                             SelectedGameObject->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
 
-                        model->GetChildren<ColliderCube>()[0]->SetColor(Color::Magenta());
                         model->GetChildren<ColliderCube>()[0]->SetDiscoverableByRayCast(false);
 
                         SelectedGameObject = gameObject;
@@ -515,7 +527,6 @@ void EditorUI::SetEditMode(bool editMode)
     {
         Model *model = dynamic_cast<Model *>(SelectedGameObject);
         EXPECT_ERROR(!model, "Can't enter edit mode, selected object is not a model");
-        model->GetChildren<Cube>()[0]->SetColor(Color::Magenta());
         model->GetChildren<ColliderCube>()[0]->SetDiscoverableByRayCast(false);
     }
 }
@@ -552,5 +563,6 @@ void EditorUI::RememberTransforms()
     {
         editModeInitialPosition = model->GetPosition();
         editModeInitialRotation = model->GetRotation();
+        PrevObjectRotation = model->GetRotation();
     }
 }

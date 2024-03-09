@@ -3,6 +3,7 @@
 #include "EditorUI.h"
 #include "IsometricCamera.h"
 #include "FreeMoveCamera.h"
+#include <cmath>
 
 /**
  * TODO: Navmeshes
@@ -29,6 +30,8 @@ void Editor::init()
     Config::GetInstance().Load();
 
     // Initialize editor
+    editorUI = &EditorUI::GetInstance();
+
     isometricCameraMouseRayCast = new RayCast3D();
     isometricCameraMouseRayCast->EnableDebugDraw(true);
 
@@ -40,8 +43,8 @@ void Editor::init()
     freeMoveCamera->SetRotation({0, 0, 45});
     freeMoveCamera->SetFOV(60.0f);
 
-    EditorUI::GetInstance().AddCamera(isometricCamera);
-    EditorUI::GetInstance().AddCamera(freeMoveCamera);
+    editorUI->AddCamera(isometricCamera);
+    editorUI->AddCamera(freeMoveCamera);
 }
 
 void Editor::Run()
@@ -56,14 +59,18 @@ void Editor::Run()
 
         /***************************************************/
         /********************** Render *********************/
-        EditorUI::GetInstance().Update();
+
+        if (editorUI->SelectedGameObject)
+            (editorUI->SelectedGameObject->GetChildren<ColliderCube>()[0])->SetColor(Color::Magenta());
+
+        editorUI->Update();
         Engine::GetInstance().DrawFrame();
     }
 }
 
 void Editor::update()
 {
-    if (EditorUI::GetInstance().IsMainRenderWindowIsHovered())
+    if (editorUI->IsMainRenderWindowIsHovered())
     {
         isometricCameraMouseRayCast->StopAtY(floor);
         handleSelectedAssetPlacement();
@@ -72,108 +79,198 @@ void Editor::update()
 
 void Editor::handleInput()
 {
-    EditorUI::GetInstance().UpdateCamerasStates();
+    editorUI->UpdateCamerasStates();
 
-    if (EditorUI::GetInstance().IsMainRenderWindowIsHovered())
+    if (editorUI->IsMainRenderWindowIsHovered())
     {
         /*****************************************************************************/
         /*****************  Check buttons input (mouse and keyboard)  ****************/
         /*****************************************************************************/
 
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////   Placing objects with left mouse button
+
         if (Input::IsJustPressed(MouseButton::LEFT))
         {
-            if (EditorUI::GetInstance().SelectedGameObject)
+            if (editorUI->RotationMode)
             {
-                Model *selectedObject = dynamic_cast<Model *>(EditorUI::GetInstance().SelectedGameObject);
+                editorUI->RememberTransforms();
+                editorUI->RotationMode = false;
+                Input::CaptureMouse(false);
+            }
+
+            if (editorUI->SelectedGameObject)
+            {
+                Model *selectedObject = dynamic_cast<Model *>(editorUI->SelectedGameObject);
 
                 if (selectedObject)
                 {
                     selectedObject->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(true);
                     levelObjects.push_back(selectedObject);
-                    EditorUI::GetInstance().UpdateSelectedObjectProperties();
+                    editorUI->UpdateSelectedObjectProperties();
 
-                    if (!EditorUI::GetInstance().IsEditMode())
+                    if (!editorUI->IsEditMode())
                     {
                         selectedObject->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
-                        EditorUI::GetInstance().SelectedGameObject = nullptr;
+                        editorUI->SelectedGameObject = nullptr;
+                    }
+                    else
+                    {
+                        if (hoveredCollider && hoveredCollider->GetParent() != editorUI->SelectedGameObject)
+                        {
+                            selectedObject->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
+                            editorUI->SelectedGameObject = hoveredCollider->GetParent();
+                        }
                     }
                 }
 
-                if (EditorUI::GetInstance().IsEditMode())
-                    EditorUI::GetInstance().MoveWithMouse = false;
+                if (editorUI->IsEditMode())
+                    editorUI->MoveWithMouse = false;
             }
 
-            if (hoveredCollider && !EditorUI::GetInstance().IsEditMode())
+            if (hoveredCollider && !editorUI->IsEditMode())
             {
                 GameObject *obj = hoveredCollider->GetParent();
 
                 if (obj)
                 {
-                    EditorUI::GetInstance().SelectedGameObject = hoveredCollider->GetParent();
-                    EditorUI::GetInstance().SetEditMode(true);
+                    editorUI->SelectedGameObject = hoveredCollider->GetParent();
+                    editorUI->SetEditMode(true);
                     hoveredCollider = nullptr;
                 }
             }
         }
 
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////   Changing floor height
+
         if (Input::IsPressed(MouseButton::RIGHT) && Input::IsJustPressed(SCROLL_UP))
-            EditorUI::GetInstance().FloorHeight -= 1;
+            editorUI->FloorHeight -= 1;
         if (Input::IsPressed(MouseButton::RIGHT) && Input::IsJustPressed(SCROLL_DOWN))
-            EditorUI::GetInstance().FloorHeight += 1;
+            editorUI->FloorHeight += 1;
+
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////   Rotating selected object
+
+        if (Input::IsJustPressed(R) && editorUI->IsEditMode() && !editorUI->MoveWithMouse)
+        {
+            Model *selectedObject = dynamic_cast<Model *>(editorUI->SelectedGameObject);
+
+            if (selectedObject)
+            {
+                editorUI->RotationMode = !editorUI->RotationMode;
+
+                if (!editorUI->RotationMode)
+                {
+                    selectedObject->SetRotation(editorUI->PrevObjectRotation);
+                    Input::CaptureMouse(false);
+                }
+                else
+                {
+                    editorUI->PrevObjectRotation = selectedObject->GetRotation();
+                    Input::CaptureMouse(true);
+                    rotationModeIntermediate = selectedObject->GetRotation();
+                }
+            }
+        }
+
+        if (editorUI->RotationMode)
+        {
+            Model *selectedObject = dynamic_cast<Model *>(editorUI->SelectedGameObject);
+
+            if (selectedObject)
+            {
+                rotationModeIntermediate.SetYaw(rotationModeIntermediate.Yaw() + (Input::GetMouseMovementDelta().x * 0.1f));
+
+                if (Input::IsPressed(ANY_CONTROL))
+                {
+                    // Lock yaw to 22.5 degrees increments
+                    Euler rotation = rotationModeIntermediate;
+                    rotation.SetYaw(floorf(rotation.Yaw() / 22.5f) * 22.5f);
+                    selectedObject->SetRotation(rotation);
+                }
+                else
+                    selectedObject->SetRotation(rotationModeIntermediate);
+            }
+            else
+            {
+                editorUI->RotationMode = false;
+                Input::CaptureMouse(false);
+            }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////   Deleting objects
 
         if (Input::IsJustPressed(DELETE))
         {
-            if (EditorUI::GetInstance().IsEditMode())
+            if (editorUI->IsEditMode())
             {
                 erase_if(levelObjects, [](GameObject *obj) { return obj == EditorUI::GetInstance().SelectedGameObject; });
-                delete EditorUI::GetInstance().SelectedGameObject;
-                EditorUI::GetInstance().SelectedGameObject = nullptr;
-                EditorUI::GetInstance().SetEditMode(false);
+                delete editorUI->SelectedGameObject;
+                editorUI->SelectedGameObject = nullptr;
+                editorUI->SetEditMode(false);
             }
         }
+
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////   Canceling edits or new object placement
 
         if (Input::IsJustPressed(ESCAPE))
         {
-            if (EditorUI::GetInstance().IsEditMode())
-                EditorUI::GetInstance().SetEditMode(false);
+            if (editorUI->IsEditMode())
+                editorUI->SetEditMode(false);
             else
             {
-                delete EditorUI::GetInstance().SelectedGameObject;
-                EditorUI::GetInstance().SelectedGameObject = nullptr;
-                EditorUI::GetInstance().SelectedAsset = nullptr;
+                delete editorUI->SelectedGameObject;
+                editorUI->SelectedGameObject = nullptr;
+                editorUI->SelectedAsset = nullptr;
             }
 
-            EditorUI::GetInstance().MoveWithMouse = false;
+            editorUI->MoveWithMouse = false;
         }
 
-        if (Input::IsJustPressed(G) && EditorUI::GetInstance().IsEditMode())
+
+        /////////////////////////////////////////////////////////////////////////////
+        /////   Moving selected object
+
+        if (Input::IsJustPressed(G) && editorUI->IsEditMode())
         {
-            Model *selectedObject = dynamic_cast<Model *>(EditorUI::GetInstance().SelectedGameObject);
+            Model *selectedObject = dynamic_cast<Model *>(editorUI->SelectedGameObject);
 
             if (selectedObject)
                 selectedObject->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(true);
 
-            if (EditorUI::GetInstance().MoveWithMouse)
-                EditorUI::GetInstance().RestoreTransforms();
+            if (editorUI->MoveWithMouse)
+                editorUI->RestoreTransforms();
             else
-                EditorUI::GetInstance().RememberTransforms();
+                editorUI->RememberTransforms();
 
-            EditorUI::GetInstance().MoveWithMouse = !EditorUI::GetInstance().MoveWithMouse;
+            editorUI->MoveWithMouse = !editorUI->MoveWithMouse;
         }
+
+
 
         /*****************************************************************************/
         /***************************  Check mouse hovers  ****************************/
         /*****************************************************************************/
 
+        /////////////////////////////////////////////////////////////////////////////
+        /////   Hovering objects with mouse
+
         if (hoveredCollider)
         {
-            if (hoveredCollider != EditorUI::GetInstance().SelectedGameObject)
+            if (hoveredCollider != editorUI->SelectedGameObject)
                 hoveredCollider->SetColor(Color::Cyan());
 
             hoveredCollider = nullptr;
         }
 
-        if (!EditorUI::GetInstance().IsEditMode() && !EditorUI::GetInstance().MoveWithMouse)
+        if (!editorUI->MoveWithMouse)
         {
             if (Collider3D *collider = isometricCameraMouseRayCast->GetCollidedObject())
             {
@@ -189,41 +286,40 @@ void Editor::handleInput()
 
 void Editor::handleSelectedAssetPlacement()
 {
-    isometricCameraMouseRayCast->StopAtY(EditorUI::GetInstance().FloorHeight);
+    isometricCameraMouseRayCast->StopAtY(editorUI->FloorHeight);
     isometricCamera->PerformMouseRayCast();
 
-    Model *selectedObject = dynamic_cast<Model *>(EditorUI::GetInstance().SelectedGameObject);
+    Model *selectedObject = dynamic_cast<Model *>(editorUI->SelectedGameObject);
 
-    if (!EditorUI::GetInstance().SelectedGameObject || (selectedObject && EditorUI::GetInstance().SelectedGameObject))
+    if (!editorUI->SelectedGameObject || (selectedObject && editorUI->SelectedGameObject))
     {
         // If asset selected, but active object is not created - create it
-        if (selectedObject == nullptr && EditorUI::GetInstance().SelectedAsset != nullptr)
+        if (selectedObject == nullptr && editorUI->SelectedAsset != nullptr)
         {
-            selectedObject = new Model(EditorUI::GetInstance().SelectedAsset->path);
-            selectedObject->SetRotation(EditorUI::GetInstance().PrevObjectRotation);
+            selectedObject = new Model(editorUI->SelectedAsset->path);
+            selectedObject->SetRotation(editorUI->PrevObjectRotation);
             selectedObject->GenerateBoxCollider();
-            selectedObject->GetChildren<Cube>()[0]->SetColor(Color::Magenta());
             selectedObject->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(false);
-            EditorUI::GetInstance().SelectedGameObject = selectedObject;
+            editorUI->SelectedGameObject = selectedObject;
         }
 
         // Adjust active object position
-        if (selectedObject != nullptr && EditorUI::GetInstance().MoveWithMouse)
+        if (selectedObject != nullptr && editorUI->MoveWithMouse)
         {
             selectedObject->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(false);
             Vector3 pos = isometricCameraMouseRayCast->GetStopPosition();
 
-            if (EditorUI::GetInstance().StickToGrid)
+            if (editorUI->StickToGrid)
             {
                 pos.x =
-                    floorf(pos.x / EditorUI::GetInstance().StickyGridSize[0]) *
-                    EditorUI::GetInstance().StickyGridSize[0] +
-                    EditorUI::GetInstance().StickyGridOffset[0];
+                    floorf(pos.x / editorUI->StickyGridSize[0]) *
+                    editorUI->StickyGridSize[0] +
+                    editorUI->StickyGridOffset[0];
 
                 pos.z =
-                    floorf(pos.z / EditorUI::GetInstance().StickyGridSize[1]) *
-                    EditorUI::GetInstance().StickyGridSize[1] +
-                    EditorUI::GetInstance().StickyGridOffset[1];
+                    floorf(pos.z / editorUI->StickyGridSize[1]) *
+                    editorUI->StickyGridSize[1] +
+                    editorUI->StickyGridOffset[1];
             }
 
             selectedObject->SetPosition(pos);

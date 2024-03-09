@@ -20,6 +20,7 @@ private:
     RayCast3D *isometricCameraMouseRayCast = nullptr;
     std::vector <Model*> levelObjects;
     ColliderCube *hoveredCollider = nullptr;
+    Euler rotationModeIntermediate;
     int floor = 0;
 
     void init();
@@ -28,4 +29,5 @@ private:
     void setupUI();
     void handleSelectedAssetPlacement();
 
+    EditorUI *editorUI = nullptr;
 };
