@@ -264,7 +264,7 @@ void Editor::handleInput()
 
         if (hoveredCollider)
         {
-            if (hoveredCollider != editorUI->SelectedGameObject)
+            if (editorUI->SelectedGameObject && hoveredCollider != editorUI->SelectedGameObject->GetParent<Collider3D>())
                 hoveredCollider->SetColor(Color::Cyan());
 
             hoveredCollider = nullptr;
