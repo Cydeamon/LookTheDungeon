@@ -61,7 +61,7 @@ void Editor::Run()
         /********************** Render *********************/
 
         if (editorUI->SelectedGameObject)
-            (editorUI->SelectedGameObject->GetChildren<ColliderCube>()[0])->SetColor(Color::Magenta());
+            (editorUI->SelectedGameObject->GetChildren<Collider3D>()[0])->SetColor(Color::Magenta());
 
         editorUI->Update();
         Engine::GetInstance().DrawFrame();
@@ -112,14 +112,14 @@ void Editor::handleInput()
 
                     if (!editorUI->IsEditMode())
                     {
-                        selectedObject->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
+                        selectedObject->GetChildren<Collider3D>()[0]->SetColor(Color::Cyan());
                         editorUI->SelectedGameObject = nullptr;
                     }
                     else
                     {
                         if (hoveredCollider && hoveredCollider->GetParent() != editorUI->SelectedGameObject)
                         {
-                            selectedObject->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
+                            selectedObject->GetChildren<Collider3D>()[0]->SetColor(Color::Cyan());
                             editorUI->SelectedGameObject = hoveredCollider->GetParent();
                         }
                     }
@@ -131,7 +131,7 @@ void Editor::handleInput()
 
             if (hoveredCollider && !editorUI->IsEditMode())
             {
-                GameObject *obj = hoveredCollider->GetParent();
+                GameObject *obj = hoveredCollider->GetParent<GameObject>();
 
                 if (obj)
                 {
@@ -264,9 +264,7 @@ void Editor::handleInput()
 
         if (hoveredCollider)
         {
-            if (editorUI->SelectedGameObject && hoveredCollider != editorUI->SelectedGameObject->GetParent<Collider3D>())
-                hoveredCollider->SetColor(Color::Cyan());
-
+            hoveredCollider->SetColor(Color::Cyan());
             hoveredCollider = nullptr;
         }
 
@@ -274,7 +272,7 @@ void Editor::handleInput()
         {
             if (Collider3D *collider = isometricCameraMouseRayCast->GetCollidedObject())
             {
-                if (ColliderCube *colliderCube = dynamic_cast<ColliderCube *>(collider))
+                if (Collider3D *colliderCube = dynamic_cast<Collider3D *>(collider))
                 {
                     colliderCube->SetColor(Color::Orange());
                     hoveredCollider = colliderCube;
@@ -298,7 +296,14 @@ void Editor::handleSelectedAssetPlacement()
         {
             selectedObject = new Model(editorUI->SelectedAsset->path);
             selectedObject->SetRotation(editorUI->PrevObjectRotation);
-            selectedObject->GenerateBoxCollider();
+
+            // If selected object contains "stairs" in name - generate complex mesh collider
+            if (editorUI->SelectedAsset->name.find("stairs") != std::string::npos)
+                selectedObject->GenerateMeshCollider();
+            else
+                selectedObject->GenerateBoxCollider();
+
+
             selectedObject->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(false);
             editorUI->SelectedGameObject = selectedObject;
         }

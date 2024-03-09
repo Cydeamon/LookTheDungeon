@@ -354,8 +354,8 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
 
                     if (model)
                     {
-                        model->GetChildren<ColliderCube>()[0]->SetColor(Color::Cyan());
-                        model->GetChildren<ColliderCube>()[0]->SetDiscoverableByRayCast(true);
+                        model->GetChildren<Collider3D>()[0]->SetColor(Color::Cyan());
+                        model->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(true);
                     }
                 }
 
@@ -435,9 +435,9 @@ void EditorUI::drawGameObjectsTree(GameObject *parent)
                     if (model)
                     {
                         if (SelectedGameObject)
-                            SelectedGameObject->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
+                            SelectedGameObject->GetChildren<Collider3D>()[0]->SetColor(Color::Cyan());
 
-                        model->GetChildren<ColliderCube>()[0]->SetDiscoverableByRayCast(false);
+                        model->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(false);
 
                         SelectedGameObject = gameObject;
                         RememberTransforms();
@@ -509,8 +509,8 @@ void EditorUI::SetEditMode(bool editMode)
 
         if (model)
         {
-            model->GetChildren<Cube>()[0]->SetColor(Color::Cyan());
-            model->GetChildren<ColliderCube>()[0]->SetDiscoverableByRayCast(true);
+            model->GetChildren<Collider3D>()[0]->SetColor(Color::Cyan());
+            model->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(true);
 
             if (MoveWithMouse)
             {
@@ -527,7 +527,7 @@ void EditorUI::SetEditMode(bool editMode)
     {
         Model *model = dynamic_cast<Model *>(SelectedGameObject);
         EXPECT_ERROR(!model, "Can't enter edit mode, selected object is not a model");
-        model->GetChildren<ColliderCube>()[0]->SetDiscoverableByRayCast(false);
+        model->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(false);
     }
 }
 

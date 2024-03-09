@@ -19,7 +19,7 @@ private:
     FreeMoveCamera *freeMoveCamera = nullptr;
     RayCast3D *isometricCameraMouseRayCast = nullptr;
     std::vector <Model*> levelObjects;
-    ColliderCube *hoveredCollider = nullptr;
+    Collider3D *hoveredCollider = nullptr;
     Euler rotationModeIntermediate;
     int floor = 0;
 
