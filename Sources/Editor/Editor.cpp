@@ -165,7 +165,7 @@ void Editor::handleInput()
         /***************************  Check mouse hovers  ****************************/
         /*****************************************************************************/
 
-        if (hoveredCollider )
+        if (hoveredCollider)
         {
             if (hoveredCollider != EditorUI::GetInstance().SelectedGameObject)
                 hoveredCollider->SetColor(Color::Cyan());

@@ -331,8 +331,22 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
 
             if (SelectedGameObject)
             {
-                delete SelectedGameObject;
-                SelectedGameObject = nullptr;
+                if (!IsEditMode())
+                    delete SelectedGameObject;
+
+                if (SelectedGameObject)
+                {
+                    Model *model = dynamic_cast<Model*>(SelectedGameObject);
+                    SelectedGameObject = nullptr;
+
+                    if (model)
+                    {
+                        model->GetChildren<ColliderCube>()[0]->SetColor(Color::Cyan());
+                        model->GetChildren<ColliderCube>()[0]->SetDiscoverableByRayCast(true);
+                    }
+                }
+
+                editMode = false;
             }
         }
 
