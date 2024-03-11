@@ -40,8 +40,6 @@ void Editor::init()
     isometricCamera->SetMouseRayCast(isometricCameraMouseRayCast);
 
     freeMoveCamera = new FreeMoveCamera();
-    freeMoveCamera->SetPosition({0, 3, -3});
-    freeMoveCamera->SetRotation({0, 0, 45});
     freeMoveCamera->SetFOV(60.0f);
 
     editorUI->AddCamera(isometricCamera);

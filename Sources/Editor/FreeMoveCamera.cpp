@@ -3,13 +3,14 @@
 
 FreeMoveCamera::FreeMoveCamera() : Camera3D()
 {
-    rotation.Clamp(Vector3(-10, 0, 0), Vector3(10, 0, 0));
+    SetPosition(-1.42671, 1.81062, 2.85435);
+    SetRotation(Euler(-12, -62, 0));
+    rotation.Clamp(Vector3(-89, 0, 0), Vector3(89, 0, 0));
 }
 
 void FreeMoveCamera::Update()
 {
     Camera3D::Update();
-
     Vector3 right = GetRotation().ResetPitch().Direction().CrossProduct(Vector3::Up());
 
     // Handle keyboard input
