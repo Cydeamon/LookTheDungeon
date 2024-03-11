@@ -22,6 +22,7 @@ void Editor::init()
     Engine::GetInstance().SetDrawSceneToPrimaryFramebuffer(false);
     Engine::GetInstance().Init();
     Engine::GetInstance().SetEngineMode(EngineMode::MODE_3D);
+    Engine::GetInstance().SetWindowResolution(1600, 900);
     Engine::GetInstance().SetWindowMaximized();
 
     // Load configuration
@@ -49,6 +50,9 @@ void Editor::init()
 
 void Editor::Run()
 {
+    Model knight("Assets/Models/Characters/Knight.glb");
+    knight.PlayAnimation("Running_A", AnimationMode::LOOP);
+
     while (Engine::GetInstance().IsRunning())
     {
         /***************************************************/
@@ -303,6 +307,11 @@ void Editor::handleSelectedAssetPlacement()
             else
                 selectedObject->GenerateBoxCollider();
 
+            // If model have "Idle" animation - play it
+            std::vector<std::string> animations = selectedObject->GetAnimationNames();
+
+            if (std::find(animations.begin(), animations.end(), "Idle") != animations.end())
+                selectedObject->PlayAnimation("Idle", AnimationMode::LOOP);
 
             selectedObject->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(false);
             editorUI->SelectedGameObject = selectedObject;
