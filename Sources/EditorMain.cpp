@@ -25,7 +25,7 @@ int main()
         HRSRC hResource = FindResource(hModule, MAKEINTRESOURCE(VS_VERSION_INFO), RT_VERSION);
         HGLOBAL hResourceData = LoadResource(hModule, hResource);
         LPVOID pResourceData = LockResource(hResourceData);
-        }DWORD dwSize = SizeofResource(hModule, hResource);
+        DWORD dwSize = SizeofResource(hModule, hResource);
     }
     #endif
 
