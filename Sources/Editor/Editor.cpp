@@ -22,6 +22,7 @@ void Editor::init()
     Engine::GetInstance().SetDrawSceneToPrimaryFramebuffer(false);
     Engine::GetInstance().Init();
     Engine::GetInstance().SetEngineMode(EngineMode::MODE_3D);
+    Engine::GetInstance().SetWindowResolution(1600, 900);
     Engine::GetInstance().SetWindowMaximized();
 
     // Load configuration

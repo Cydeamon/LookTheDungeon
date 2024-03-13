@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.22)
 set(CMAKE_CXX_STANDARD 23)
 project(LookTheDungeon VERSION 0.1.13)
 set(PROJECT_LABEL "Look! The Dungeon!")
@@ -32,6 +32,22 @@ add_executable(
     Sources/Editor/FreeMoveCamera.h
     Sources/Editor/FreeMoveCamera.cpp
 )
+
+if (UNIX AND NOT APPLE)
+
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+
+    include_directories(${GTK3_INCLUDE_DIRS})
+    link_directories(${GTK3_LIBRARY_DIRS})
+    add_definitions(${GTK3_CFLAGS_OTHER})
+
+    target_include_directories(${PROJECT_NAME} PRIVATE ${GTK3_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} ${GTK3_LIBRARIES})
+
+    target_include_directories(${PROJECT_EDITOR} PRIVATE ${GTK3_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_EDITOR} ${GTK3_LIBRARIES})
+endif()
 
 add_subdirectory(Sources/Engine)
 

@@ -1,5 +1,4 @@
 #include "EditorUI.h"
-#include <windows.h>
 
 EditorUI::EditorUI()
 {
