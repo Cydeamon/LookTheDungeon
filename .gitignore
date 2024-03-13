@@ -7,6 +7,8 @@ Deploy/*
 Sources/CMakeConfig.h
 Shaders/*.spv
 *.exe
+*_Debug
+*_Release
 lib*.a
 *.dll
 *.ilk

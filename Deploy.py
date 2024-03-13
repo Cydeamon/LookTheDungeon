@@ -1,6 +1,8 @@
 import os
+import platform
 import shutil
 import re
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -27,6 +29,7 @@ def find_project_version():
 
 project_version = find_project_version()
 
+
 # Find project name frmo CMakeLists.txt
 def find_project_name():
     with open('CMakeLists.txt', 'r') as file:
@@ -40,6 +43,7 @@ def find_project_name():
 
 project_name = find_project_name()
 
+
 # Ignore shader source files
 def ignore_shader_sources(directory, filenames):
     return [name for name in filenames if name.endswith(".vert") or name.endswith(".frag") or name.endswith(".glsl")]
@@ -49,25 +53,28 @@ def ignore_shader_sources(directory, filenames):
 def find_executables(project_name):
     executablesTypes = [""]
     executables = []
-    regex = r'(?:' + project_name + r')(.*)_(?:Release|Debug|MinSizeRel).exe'
+    regex = r'(?:' + project_name + r')(.*)_(?:Release|Debug|MinSizeRel)(.exe)?'
 
     for file in os.listdir(os.getcwd()):
         matches = re.findall(regex, file)
 
         if len(matches) > 0 and matches[0] not in executablesTypes:
-            executablesTypes.append(matches[0])
+            executablesTypes.append(matches[0][0])
 
     for type in executablesTypes:
         executable_path = ""
 
         for file in os.listdir(os.getcwd()):
-            if file.endswith(project_name + type + "_Release.exe"):
+            if file.endswith(project_name + type + "_Release.exe") or file.endswith(project_name + type + "_Release"):
                 executable_path = os.path.join(os.getcwd(), file)
                 break
-            elif file.endswith(project_name + type + "_MinSizeRel.exe"):
+            elif file.endswith(project_name + type + "_MinSizeRel.exe") or file.endswith(
+                    project_name + type + "_MinSizeRel"):
                 executable_path = os.path.join(os.getcwd(), file)
                 break
-            elif file.endswith(project_name + type + "_Debug.exe") and not executable_path.endswith(project_name + type + "_Release.exe") and not executable_path.endswith(project_name + type + "_MinSizeRel.exe"):
+            elif ((file.endswith(project_name + type + "_Debug.exe") or file.endswith(project_name + type + "_Debug"))
+                  and not (executable_path.endswith(project_name + type + "_Release.exe") or executable_path.endswith(project_name + type + "_Release"))
+                  and not (executable_path.endswith(project_name + type + "_MinSizeRel.exe") or executable_path.endswith(project_name + type + "_MinSizeRel"))):
                 executable_path = os.path.join(os.getcwd(), file)
 
         if len(executable_path) > 0:
@@ -75,6 +82,7 @@ def find_executables(project_name):
             executables.append(executable_path)
 
     return executables
+
 
 # Find project executable in current directory (Prefer file with "Release" postfix, otherwise "Debug")
 executables = find_executables(find_project_name())
@@ -105,8 +113,12 @@ for executable_path in executables:
             # Add path to library_path if it is not equal to "not found"
             if "not found" not in line:
                 matches = re.findall("^\s*([\w\.\d+-]+) => ([/\w\.\d+ -]+)(?: \(.*\))?", line)
-                current_drive = os.path.splitdrive(os.getcwd())[0][0].lower()
-                library_path = matches[0][1].replace("/c/", "C:/").strip().replace("/" + current_drive + "/", current_drive + ":/")
+
+                if platform.system() == "Windows":
+                    current_drive = os.path.splitdrive(os.getcwd())[0][0].lower()
+                    library_path = matches[0][1].replace("/c/", "C:/").strip().replace("/" + current_drive + "/", current_drive + ":/")
+                elif platform.system() == "Linux":
+                    library_path = matches[0][1].strip()
 
                 # Append if the library not from Windows folder or related to Visual C++
                 if not library_path.startswith("C:/Windows") or "msvc" in library_path or "VCRUNTIME" in library_path:
@@ -117,7 +129,8 @@ for executable_path in executables:
 
     # Copy the libraries to the deploy folder
     for library_path in library_paths:
-        print(bcolors.OKGREEN + "Copying library: " + library_path + " to deploy folder: " + deploy_folder + bcolors.ENDC)
+        print(
+            bcolors.OKGREEN + "Copying library: " + library_path + " to deploy folder: " + deploy_folder + bcolors.ENDC)
         shutil.copy(library_path, deploy_folder)
 
     # Copy the executable to the deploy folder
@@ -129,7 +142,8 @@ allowed_types = ["ini"]
 for file in os.listdir(os.getcwd()):
     for allowed_type in allowed_types:
         if file.endswith(allowed_type):
-            print(bcolors.OKBLUE + "Copying allowed file: " + file + " to deploy folder: " + deploy_folder + bcolors.ENDC)
+            print(
+                bcolors.OKBLUE + "Copying allowed file: " + file + " to deploy folder: " + deploy_folder + bcolors.ENDC)
             shutil.copy(file, deploy_folder)
 
 # Copy assets folder if exists
@@ -148,4 +162,7 @@ shutil.make_archive("./Deploy/" + project_version, 'zip', deploy_folder)
 shutil.rmtree(deploy_folder)
 
 # Open deploy folder in explorer
-os.startfile(os.path.abspath("./Deploy"))
+if platform.system() == "Windows":
+    os.startfile(os.path.abspath("./Deploy"))
+elif platform.system() == "Linux":
+    os.system("xdg-open ./Deploy")
