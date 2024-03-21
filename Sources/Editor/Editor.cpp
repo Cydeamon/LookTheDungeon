@@ -20,6 +20,7 @@ void Editor::init()
 {
     // Initialize engine
     Engine::GetInstance().SetDrawSceneToPrimaryFramebuffer(false);
+    Engine::GetInstance().SetWindowIcon("Assets/icon-window.png");
     Engine::GetInstance().Init();
     Engine::GetInstance().SetEngineMode(EngineMode::MODE_3D);
     Engine::GetInstance().SetWindowResolution(1600, 900);

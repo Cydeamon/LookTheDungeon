@@ -14,16 +14,8 @@ public:
     void UpdateCamerasStates();
     void UpdateSelectedObjectProperties();
 
-    void SetStickToGrid(bool stickToGrid);
-    void SetShowGrid(bool showGrid);
-    void SetShowAxis(bool showAxis);
-    void SetGridSize(float gridSize);
     void SetEditMode(bool editMode);
 
-    float GetGridSize();
-    bool GetStickToGrid();
-    bool GetShowGrid();
-    bool GetShowAxis();
     bool IsEditMode() { return editMode; }
 
     struct Asset

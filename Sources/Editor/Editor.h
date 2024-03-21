@@ -26,7 +26,6 @@ private:
     void init();
     void update();
     void handleInput();
-    void setupUI();
     void handleSelectedAssetPlacement();
 
     EditorUI *editorUI = nullptr;

@@ -10,6 +10,7 @@
 
 #if (IS_WINDOWS)
 #include <windows.h>
+#define IDI_ICON1 101
 #elif (IS_LINUX)
 #include <gtk/gtk.h>
 #endif
