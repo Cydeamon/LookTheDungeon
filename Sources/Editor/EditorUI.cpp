@@ -152,7 +152,7 @@ void EditorUI::SetupLayout()
         }
         ImGui::End();
 
-        ImGui::Begin("Selected Object Transforms");
+        ImGui::Begin("Selected Object");
         {
             UpdateSelectedObjectProperties();
             ImGuiInputTextFlags flags = 0;
@@ -160,13 +160,72 @@ void EditorUI::SetupLayout()
             if (SelectedGameObject == nullptr)
                 flags |= ImGuiInputTextFlags_ReadOnly;
 
+            // Object name
             ImGui::Text("Selected Object: %s", selectedObjectName.c_str());
 
+            // Object transforms
             if (ImGui::InputFloat3("Position", &selectedObjectPosition[0], "%.3f", flags))
                 applySelectedObjectsEdits();
 
             if (ImGui::InputFloat3("Rotation", &selectedObjectRotation[0], "%.3f", flags))
                 applySelectedObjectsEdits();
+
+            // Animation
+            Model *model = dynamic_cast<Model *>(SelectedGameObject);
+
+            if (model)
+            {
+                ImGui::NewLine();
+                ModelAnimation *animation = model->GetCurrentAnimation();
+                ImGui::Text("Animation: %s", (animation ? animation->GetName().c_str() : "None"));
+
+                float time = model->GetCurrentAnimationTime();
+
+                if (ImGui::BeginCombo("##Animations", (animation ? animation->GetName().c_str() : "Not selected")))
+                {
+                    for (std::string &name: model->GetAnimationNames())
+                    {
+                        if (ImGui::Selectable(name.c_str()))
+                        {
+                            model->StopAnimation();
+                            model->PlayAnimation(name);
+                        }
+                    }
+
+                    ImGui::EndCombo();
+                }
+
+                if (animation)
+                {
+                    if (ImGui::SliderFloat("##Time", &time, 0.0f, animation->GetDuration()))
+                    {
+                        model->SetCurrentAnimationTime(time);
+                    }
+
+                    if (ImGui::Button("Play"))
+                    {
+                        model->StopAnimation();
+                        model->PlayAnimation(animation->GetName(), AnimationMode::NORMAL);
+                    }
+
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("Pause"))
+                    {
+                        model->PauseAnimation();
+                    }
+
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("Stop"))
+                    {
+                        model->StopAnimation();
+                    }
+
+                    ImGui::SameLine();
+                    ImGui::Text("%s / %s", model->GetCurrentAnimationTimeString().c_str(), animation->GetDurationString().c_str());
+                }
+            }
         }
         ImGui::End();
 
@@ -436,7 +495,8 @@ void EditorUI::drawGameObjectsTree(GameObject *parent)
                         if (SelectedGameObject)
                             SelectedGameObject->GetChildren<Collider3D>()[0]->SetColor(Color::Cyan());
 
-                        model->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(false);
+                        if (model->GetChildren<Collider3D>().size())
+                            model->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(false);
 
                         SelectedGameObject = gameObject;
                         RememberTransforms();

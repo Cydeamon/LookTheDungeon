@@ -51,6 +51,8 @@ void Editor::Run()
 {
     Model knight("Assets/Models/Characters/Knight.glb");
     knight.PlayAnimation("Running_A", AnimationMode::LOOP);
+    knight.GenerateBoxCollider();
+    EditorUI::GetInstance().SelectedGameObject = &knight;
 
     while (Engine::GetInstance().IsRunning())
     {
