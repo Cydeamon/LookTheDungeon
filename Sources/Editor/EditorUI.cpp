@@ -188,7 +188,8 @@ void EditorUI::SetupLayout()
                         if (ImGui::Selectable(name.c_str()))
                         {
                             model->StopAnimation();
-                            model->PlayAnimation(name);
+                            model->PlayAnimation(name, AnimationMode::LOOP);
+                            animation = model->GetCurrentAnimation();
                         }
                     }
 
@@ -204,8 +205,7 @@ void EditorUI::SetupLayout()
 
                     if (ImGui::Button("Play"))
                     {
-                        model->StopAnimation();
-                        model->PlayAnimation(animation->GetName(), AnimationMode::NORMAL);
+                        model->PlayAnimation(animation->GetName(), AnimationMode::LOOP);
                     }
 
                     ImGui::SameLine();

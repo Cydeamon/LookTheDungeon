@@ -45,7 +45,7 @@ int main()
         #if(IS_WINDOWS)
         {
             std::string title = std::string(PROJECT_LABEL) + ". Fatal error";
-            MessageBoxA(NULL, e.what(), title.c_str(), MB_OK | MB_ICONERROR);
+            MessageBoxA(NULL, e.what(), title.c_str(), MB_OK | MB_ICONERROR | MB_TOPMOST);
         }
         #elif (IS_LINUX)
         {

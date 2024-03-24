@@ -210,7 +210,7 @@ void Editor::handleInput()
         /////////////////////////////////////////////////////////////////////////////
         /////   Deleting objects
 
-        if (Input::IsJustPressed(DELETE))
+        if (Input::IsJustPressed(KeyboardKey::DELETE))
         {
             if (editorUI->IsEditMode())
             {
