@@ -23,13 +23,39 @@ void Editor::init()
     Engine::GetInstance().SetWindowIcon("Assets/icon-window.png");
     Engine::GetInstance().Init();
     Engine::GetInstance().SetEngineMode(EngineMode::MODE_3D);
-    Engine::GetInstance().SetWindowResolution(1600, 900);
-    Engine::GetInstance().SetWindowMaximized();
 
     // Load configuration
     Config::GetInstance().SetIniFileName("LookTheDungeonEditor.ini");
     Config::GetInstance().SetSaveOnValuesChange(true);
     Config::GetInstance().Load();
+
+    // Init window
+    int windowWidth;
+    int windowHeight;
+    int windowPosX = 0;
+    int windowPosY = 0;
+    bool windowMaximized;
+
+    try {
+        windowWidth = Config::GetInstance().GetValue<int>("Window", "Width");
+        windowHeight = Config::GetInstance().GetValue<int>("Window", "Height");
+        windowPosX = Config::GetInstance().GetValue<int>("Window", "Position X");
+        windowPosY = Config::GetInstance().GetValue<int>("Window", "Position Y");
+        windowMaximized = Config::GetInstance().GetValue<bool>("Window", "Maximized");
+    } catch (std::exception &e) {
+        windowWidth = 1280;
+        windowHeight = 720;
+        windowMaximized = true;
+
+        Config::GetInstance().SetValue("Window", "Width", windowWidth);
+        Config::GetInstance().SetValue("Window", "Height", windowHeight);
+        Config::GetInstance().SetValue("Window", "Maximized", windowMaximized);
+    }
+
+    Engine::GetInstance().SetWindowResolution(windowWidth, windowHeight);
+
+    if (windowMaximized)
+        Engine::GetInstance().SetWindowMaximized();
 
     // Initialize editor
     editorUI = &EditorUI::GetInstance();
@@ -183,7 +209,7 @@ void Editor::handleInput()
 
             if (selectedObject)
             {
-                rotationModeIntermediate.SetYaw(rotationModeIntermediate.Yaw() + (Input::GetMouseMovementDelta().x * 0.1f));
+                rotationModeIntermediate.SetYaw(rotationModeIntermediate.Yaw() + (Input::GetMouseMovementDelta().X * 0.1f));
 
                 if (Input::IsPressed(ANY_CONTROL))
                 {
@@ -337,4 +363,11 @@ void Editor::handleSelectedAssetPlacement()
     }
 }
 
-Editor::~Editor() = default;
+Editor::~Editor()
+{
+    Config::GetInstance().SetValue("Window", "Width", Engine::GetInstance().GetWindowSize().X);
+    Config::GetInstance().SetValue("Window", "Height", Engine::GetInstance().GetWindowSize().Y);
+    Config::GetInstance().SetValue("Window", "Position X", Engine::GetInstance().GetWindowPosition().X);
+    Config::GetInstance().SetValue("Window", "Position Y", Engine::GetInstance().GetWindowPosition().Y);
+    Config::GetInstance().SetValue("Window", "Maximized", Engine::GetInstance().IsWindowMaximized());
+}

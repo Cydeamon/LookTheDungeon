@@ -31,6 +31,6 @@ void FreeMoveCamera::Update()
 
     if (Input::IsMouseCaptured() && Input::GetMouseMovementDelta())
     {
-        MouseRotation(Input::GetMouseMovementDelta().x * MouseSensitivity, Input::GetMouseMovementDelta().y * MouseSensitivity);
+        MouseRotation(Input::GetMouseMovementDelta().X * MouseSensitivity, Input::GetMouseMovementDelta().Y * MouseSensitivity);
     }
 }
