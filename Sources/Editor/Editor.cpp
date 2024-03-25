@@ -54,6 +54,12 @@ void Editor::Run()
     knight.GenerateBoxCollider();
     EditorUI::GetInstance().SelectedGameObject = &knight;
 
+    knight.HideAllMeshes();
+    knight.ShowMeshes({
+        "Cube.127", "Cube.128", "PrototypePete_head.001",
+        "PrototypePete_body.020", "Cube.126", "Cube.125"
+    });
+
     while (Engine::GetInstance().IsRunning())
     {
         /***************************************************/
