@@ -45,22 +45,22 @@ void EditorUI::SetupLayout()
             {
                 if (ImGui::MenuItem("New"))
                 {
-                    NotImplementedWarning();
+                    newProjectCallback();
                 }
 
                 if (ImGui::MenuItem("Open"))
                 {
-                    NotImplementedWarning();
+                    openProjectCallback();
                 }
 
                 if (ImGui::MenuItem("Save"))
                 {
-                    NotImplementedWarning();
+                    saveProjectCallback();
                 }
 
                 if (ImGui::MenuItem("Exit"))
                 {
-                    exit(0);
+                    exitCallback();
                 }
 
                 ImGui::EndMenu();
@@ -148,6 +148,7 @@ void EditorUI::SetupLayout()
             {
                 Config::GetInstance().SetValue("EditorUI", "DrawCollisionShapes", DrawCollisionShapes);
                 prevDrawCollisionShapes = DrawCollisionShapes;
+                Engine::GetInstance().SetDrawColliders(DrawCollisionShapes);
             }
         }
         ImGui::End();
@@ -435,9 +436,9 @@ void EditorUI::DrawAsset(EditorUI::Asset &asset)
     ImGui::EndGroup();
 }
 
-bool EditorUI::IsMainRenderWindowIsHovered()
+bool EditorUI::IsRenderWindowHovered(int num)
 {
-    return renderHovered[0];
+    return renderHovered[num];
 }
 
 void EditorUI::AddCamera(Camera3D *camera)
@@ -604,6 +605,7 @@ void EditorUI::readConfig()
 {
     DrawCollisionShapes = Config::GetInstance().GetValue<bool>("EditorUI", "DrawCollisionShapes");
     prevDrawCollisionShapes = DrawCollisionShapes;
+    Engine::GetInstance().SetDrawColliders(DrawCollisionShapes);
 
     ShowAxis = Config::GetInstance().GetValue<bool>("EditorUI", "ShowAxis");
     prevShowAxis = ShowAxis;

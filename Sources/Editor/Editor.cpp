@@ -29,7 +29,6 @@ void Editor::init()
     Config::GetInstance().SetSaveOnValuesChange(true);
     Config::GetInstance().Load();
 
-    // Init window
     int windowWidth;
     int windowHeight;
     int windowPosX = 0;
@@ -60,17 +59,23 @@ void Editor::init()
     // Initialize editor
     editorUI = &EditorUI::GetInstance();
 
-    isometricCameraMouseRayCast = new RayCast3D();
-    isometricCameraMouseRayCast->EnableDebugDraw(true);
-
+    editorMouseRaycast = new RayCast3D();
+    editorMouseRaycast->EnableDebugDraw(true);
     isometricCamera = new IsometricCamera();
-    isometricCamera->SetMouseRayCast(isometricCameraMouseRayCast);
+    isometricCamera->SetMouseRayCast(editorMouseRaycast);
 
     freeMoveCamera = new FreeMoveCamera();
+    freeMoveCamera->SetMouseRayCast(editorMouseRaycast);
     freeMoveCamera->SetFOV(60.0f);
 
     editorUI->AddCamera(isometricCamera);
     editorUI->AddCamera(freeMoveCamera);
+
+    // UI callbacks
+    editorUI->SetNewProjectCallback([this]() { newProject(); });
+    editorUI->SetSaveProjectCallback([this]() { saveProject(); });
+    editorUI->SetOpenProjectCallback([this]() { openProject(); });
+    editorUI->SetExitCallback([this]() { quit(); });
 }
 
 void Editor::Run()
@@ -96,9 +101,9 @@ void Editor::Run()
 
 void Editor::update()
 {
-    if (editorUI->IsMainRenderWindowIsHovered())
+    if (editorUI->IsRenderWindowHovered(0) || editorUI->IsRenderWindowHovered(1))
     {
-        isometricCameraMouseRayCast->StopAtY(floor);
+        editorMouseRaycast->StopAtY(floor);
         handleSelectedAssetPlacement();
     }
 }
@@ -107,12 +112,11 @@ void Editor::handleInput()
 {
     editorUI->UpdateCamerasStates();
 
-    if (editorUI->IsMainRenderWindowIsHovered())
+    if (editorUI->IsRenderWindowHovered(0) || editorUI->IsRenderWindowHovered(1))
     {
         /*****************************************************************************/
         /*****************  Check buttons input (mouse and keyboard)  ****************/
         /*****************************************************************************/
-
 
         /////////////////////////////////////////////////////////////////////////////
         /////   Placing objects with left mouse button
@@ -296,7 +300,7 @@ void Editor::handleInput()
 
         if (!editorUI->MoveWithMouse)
         {
-            if (Collider3D *collider = isometricCameraMouseRayCast->GetCollidedObject())
+            if (Collider3D *collider = editorMouseRaycast->GetCollidedObject())
             {
                 if (Collider3D *colliderCube = dynamic_cast<Collider3D *>(collider))
                 {
@@ -310,8 +314,12 @@ void Editor::handleInput()
 
 void Editor::handleSelectedAssetPlacement()
 {
-    isometricCameraMouseRayCast->StopAtY(editorUI->FloorHeight);
-    isometricCamera->PerformMouseRayCast();
+    editorMouseRaycast->StopAtY(editorUI->FloorHeight);
+
+    if (editorUI->IsRenderWindowHovered(0))
+        isometricCamera->PerformMouseRayCast();
+    else
+        freeMoveCamera->PerformMouseRayCast();
 
     Model *selectedObject = dynamic_cast<Model *>(editorUI->SelectedGameObject);
 
@@ -324,7 +332,11 @@ void Editor::handleSelectedAssetPlacement()
             selectedObject->SetRotation(editorUI->PrevObjectRotation);
 
             // If selected object contains "stairs" in name - generate complex mesh collider
-            if (editorUI->SelectedAsset->name.find("stairs") != std::string::npos)
+            if (editorUI->SelectedAsset->name.find("stairs") != std::string::npos ||
+                editorUI->SelectedAsset->name.find("corner") != std::string::npos ||
+                editorUI->SelectedAsset->name.find("scaffold") != std::string::npos ||
+                editorUI->SelectedAsset->name.find("doorway") != std::string::npos ||
+                editorUI->SelectedAsset->name.find("Tsplit") != std::string::npos)
                 selectedObject->GenerateMeshCollider();
             else
                 selectedObject->GenerateBoxCollider();
@@ -343,7 +355,7 @@ void Editor::handleSelectedAssetPlacement()
         if (selectedObject != nullptr && editorUI->MoveWithMouse)
         {
             selectedObject->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(false);
-            Vector3 pos = isometricCameraMouseRayCast->GetStopPosition();
+            Vector3 pos = editorMouseRaycast->GetStopPosition();
 
             if (editorUI->StickToGrid)
             {
@@ -365,9 +377,57 @@ void Editor::handleSelectedAssetPlacement()
 
 Editor::~Editor()
 {
+    quit();
+}
+
+void Editor::quit()
+{
+    if (!project)
+        project = new Project();
+
+    try
+    {
+        project->Save(levelObjects);
+    }
+    catch (std::exception e)
+    {
+        std::string msg = e.what();
+        EXPECT_ERROR(msg != "Project save canceled", "%s", msg.c_str());
+
+        if (msg == "Project save canceled")
+            return;
+    }
+
     Config::GetInstance().SetValue("Window", "Width", Engine::GetInstance().GetWindowSize().X);
     Config::GetInstance().SetValue("Window", "Height", Engine::GetInstance().GetWindowSize().Y);
     Config::GetInstance().SetValue("Window", "Position X", Engine::GetInstance().GetWindowPosition().X);
     Config::GetInstance().SetValue("Window", "Position Y", Engine::GetInstance().GetWindowPosition().Y);
     Config::GetInstance().SetValue("Window", "Maximized", Engine::GetInstance().IsWindowMaximized());
+    exit(0);
+}
+
+void Editor::newProject()
+{
+    std::cout << "New project" << std::endl;
+}
+
+void Editor::saveProject()
+{
+    if (!project)
+        project = new Project();
+
+    try
+    {
+        project->Save(levelObjects);
+    }
+    catch (std::exception e)
+    {
+        std::string msg = e.what();
+        EXPECT_ERROR(msg != "Project save canceled", "%s", msg.c_str());
+    }
+}
+
+void Editor::openProject()
+{
+    std::cout << "Open project" << std::endl;
 }

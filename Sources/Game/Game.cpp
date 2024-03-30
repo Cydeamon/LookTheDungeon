@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "CMakeConfig.h"
 #include "IsometricCamera.h"
+#include "Editor/Project.h"
 
 Game::Game()
 {
@@ -21,6 +22,8 @@ void Game::init()
 void Game::Run()
 {
     IsometricCamera camera;
+    Project project("Levels/level1.lvl");
+    levelObjects = project.GetGameObjects();
 
     while (engine->IsRunning())
     {

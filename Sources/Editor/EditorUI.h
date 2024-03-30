@@ -7,7 +7,7 @@ class EditorUI
 public:
     static EditorUI& GetInstance();
     void Update();
-    bool IsMainRenderWindowIsHovered();
+    bool IsRenderWindowHovered(int num);
 
     void AddCamera(Camera3D *camera);
     void HandleCameraStateUpdates(int num);
@@ -15,8 +15,12 @@ public:
     void UpdateSelectedObjectProperties();
 
     void SetEditMode(bool editMode);
-
     bool IsEditMode() { return editMode; }
+
+    void SetSaveProjectCallback(std::function<void()> callback) { saveProjectCallback = callback; }
+    void SetOpenProjectCallback(std::function<void()> callback) { openProjectCallback = callback; }
+    void SetNewProjectCallback(std::function<void()> callback) { newProjectCallback = callback; }
+    void SetExitCallback(std::function<void()> callback) { exitCallback = callback; }
 
     struct Asset
     {
@@ -53,13 +57,18 @@ private:
     void drawGameObjectsTree(GameObject *parent = nullptr);
     void applySelectedObjectsEdits();
 
+    std::function<void()> newProjectCallback;
+    std::function<void()> saveProjectCallback;
+    std::function<void()> openProjectCallback;
+    std::function<void()> exitCallback;
+
     std::vector<Asset> levelParts;
     std::vector<Asset> characters;
     Texture *assetPlaceholderTexture = nullptr;
     bool prevStickToGrid = false;
     bool prevShowGrid = false;
     bool prevShowAxis = false;
-    bool prevDrawCollisionShapes = true;
+    bool prevDrawCollisionShapes = false;
     std::string selectedObjectName = "None";
     float selectedObjectPosition[3] = {0, 0, 0};
     float selectedObjectRotation[3] = {0, 0, 0};

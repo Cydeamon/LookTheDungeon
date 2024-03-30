@@ -12,6 +12,7 @@ public:
 
 private:
     Engine* engine;
+    std::vector <GameObject3D *> levelObjects;
 
     void init();
     void update();

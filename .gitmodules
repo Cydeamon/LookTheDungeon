@@ -4,3 +4,6 @@
 [submodule "Shaders"]
 	path = Shaders
 	url = git@github.com:Cygine/CygineShaders.git
+[submodule "Sources/Vendor/json"]
+	path = Sources/Vendor/json
+	url = git@github.com:nlohmann/json.git

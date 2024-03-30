@@ -4,6 +4,7 @@
 #include "FreeMoveCamera.h"
 #include "IsometricCamera.h"
 #include "EditorUI.h"
+#include "Project.h"
 
 class Editor
 {
@@ -17,16 +18,23 @@ private:
     Engine* engine;
     IsometricCamera *isometricCamera = nullptr;
     FreeMoveCamera *freeMoveCamera = nullptr;
-    RayCast3D *isometricCameraMouseRayCast = nullptr;
-    std::vector <Model*> levelObjects;
+    RayCast3D *editorMouseRaycast = nullptr;
+    std::vector <GameObject3D *> levelObjects;
     Collider3D *hoveredCollider = nullptr;
     Euler rotationModeIntermediate;
     int floor = 0;
+    EditorUI *editorUI = nullptr;
+    Project *project = nullptr;
 
     void init();
     void update();
     void handleInput();
     void handleSelectedAssetPlacement();
 
-    EditorUI *editorUI = nullptr;
+    void quit();
+    void newProject();
+    void saveProject();
+    void openProject();
+
+
 };

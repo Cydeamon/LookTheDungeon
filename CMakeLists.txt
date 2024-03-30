@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 set(CMAKE_CXX_STANDARD 23)
-project(LookTheDungeon VERSION 0.1.15)
+project(LookTheDungeon VERSION 0.1.16)
 set(PROJECT_LABEL "Look! The Dungeon!")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../)
 set(PROJECT_EDITOR ${PROJECT_NAME}Editor)
@@ -14,6 +14,9 @@ add_executable(
     Sources/Game/Game.h
     Sources/Game/IsometricCamera.h
     Sources/Game/IsometricCamera.cpp
+    Sources/Editor/Project.cpp
+    Sources/Editor/Project.h
+    Sources/Vendor/json/single_include/nlohmann/json.hpp
 )
 
 add_executable(
@@ -31,6 +34,9 @@ add_executable(
     Sources/Editor/EditorUI.h
     Sources/Editor/FreeMoveCamera.h
     Sources/Editor/FreeMoveCamera.cpp
+    Sources/Editor/Project.cpp
+    Sources/Editor/Project.h
+    Sources/Vendor/json/single_include/nlohmann/json.hpp
 )
 
 if (UNIX AND NOT APPLE)
@@ -52,9 +58,11 @@ endif()
 add_subdirectory(Sources/Engine)
 
 target_include_directories(${PROJECT_NAME} PRIVATE Sources)
+target_include_directories(${PROJECT_NAME} PRIVATE Sources/Vendor/json/single_include/nlohmann/)
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}_${CMAKE_BUILD_TYPE}")
 
 target_include_directories(${PROJECT_EDITOR} PRIVATE Sources)
+target_include_directories(${PROJECT_EDITOR} PRIVATE Sources/Vendor/json/single_include/nlohmann/)
 set_target_properties(${PROJECT_EDITOR} PROPERTIES OUTPUT_NAME "${PROJECT_EDITOR}_${CMAKE_BUILD_TYPE}")
 
 configure_file("${PROJECT_SOURCE_DIR}/Sources/CMakeConfig.h.in" "${PROJECT_SOURCE_DIR}/Sources/CMakeConfig.h")
