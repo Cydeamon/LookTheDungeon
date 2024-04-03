@@ -10,14 +10,18 @@ public:
     Project(std::string projectPath = "");
 
     void Save(std::vector<GameObject3D *> objects);
-    void SetProjectPath(const std::string& path) { projectPath = path; }
+    void OpenFromFile();
 
+    void SetProjectPath(const std::string& path) { projectPath = path; }
+    std::string GetFileName() { return fileName; }
     std::vector<GameObject3D *> GetGameObjects();
+
 private:
     std::string projectPath;
+    std::string fileName;
 
     void getProjectPathFromSaveDialog();
-    void loadProject(std::string projectPath);
+    void getProjectPathFromOpenDialog();
     nlohmann::json getGameObjectJson(GameObject3D *gameObject);
     GameObject3D *readGameObjectFromJson(nlohmann::json jsonObject);
 };

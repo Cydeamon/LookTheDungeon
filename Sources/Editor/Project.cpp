@@ -13,6 +13,9 @@
 Project::Project(std::string projectPath)
 {
     this->projectPath = projectPath;
+
+    if (projectPath != "")
+        fileName = projectPath.substr(projectPath.find_last_of('/') + 1);
 }
 
 void Project::Save(std::vector<GameObject3D *> gameObjects)
@@ -45,11 +48,19 @@ void Project::Save(std::vector<GameObject3D *> gameObjects)
     }
 }
 
+void Project::OpenFromFile()
+{
+    getProjectPathFromOpenDialog();
+
+    if (projectPath == "")
+        throw std::runtime_error("Project open canceled");    
+}
+
 void Project::getProjectPathFromSaveDialog()
 {
     std::filesystem::path cwd = std::filesystem::current_path();
     char buffer[512] = "\0";
-    strcpy_s(buffer, (cwd.string() + "\\level.lvl").c_str());
+    strncpy(buffer, (cwd.string() + "\\level.lvl").c_str(), 512);
 
     #if IS_WINDOWS
     {
@@ -68,10 +79,88 @@ void Project::getProjectPathFromSaveDialog()
 
         if (GetSaveFileName(&ofn))
             projectPath = buffer;
+
+        if (projectPath != "")
+            fileName = projectPath.substr(projectPath.find_last_of('/') + 1);
     }
     #elif IS_LINUX
     {
-        // TODO: Handle save on Linux
+
+        gtk_init(NULL, NULL);
+        GtkWidget *dialog = gtk_file_chooser_dialog_new(
+            "Save level",
+            NULL,
+            GTK_FILE_CHOOSER_ACTION_SAVE,
+            GTK_STOCK_CANCEL, 
+            GTK_RESPONSE_CANCEL,
+            GTK_STOCK_SAVE, 
+            GTK_RESPONSE_ACCEPT,
+            NULL
+        );
+
+        gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+
+        if (response == GTK_RESPONSE_ACCEPT)
+            projectPath = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+
+        if (projectPath != "")
+            fileName = projectPath.substr(projectPath.find_last_of('/') + 1);
+
+        gtk_widget_destroy(dialog);
+        gtk_main_quit();
+    }
+    #endif
+}
+
+void Project::getProjectPathFromOpenDialog()
+{
+    std::filesystem::path cwd = std::filesystem::current_path();
+
+    #if IS_WINDOWS
+    {
+        OPENFILENAME ofn;
+        ZeroMemory(&ofn, sizeof(OPENFILENAME));
+        ofn.lStructSize = sizeof(OPENFILENAME);
+        ofn.hwndOwner = NULL;
+        ofn.lpstrFile = buffer;
+        ofn.nMaxFile = sizeof(buffer);
+        ofn.lpstrFilter = "Level Files (*.lvl)\0*.lvl\0";
+        ofn.nFilterIndex = 1;
+        ofn.lpstrFileTitle = NULL;
+        ofn.nMaxFileTitle = 0;
+        ofn.lpstrInitialDir = NULL;
+        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+        if (GetOpenFileName(&ofn))
+            projectPath = buffer;
+
+        if (projectPath != "")
+            fileName = projectPath.substr(projectPath.find_last_of('/') + 1);
+    }
+    #elif IS_LINUX
+    {
+        gtk_init(NULL, NULL);
+        GtkWidget *dialog = gtk_file_chooser_dialog_new(
+            "Open level",
+            NULL,
+            GTK_FILE_CHOOSER_ACTION_OPEN,
+            GTK_STOCK_CANCEL, 
+            GTK_RESPONSE_CANCEL,
+            GTK_STOCK_OPEN, 
+            GTK_RESPONSE_ACCEPT,
+            NULL
+        );
+
+        gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+
+        if (response == GTK_RESPONSE_ACCEPT)
+            projectPath = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+
+        if (projectPath != "")
+            fileName = projectPath.substr(projectPath.find_last_of('/') + 1);
+
+        gtk_widget_destroy(dialog);
+        gtk_main_quit();        
     }
     #endif
 }

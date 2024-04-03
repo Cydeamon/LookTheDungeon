@@ -24,6 +24,7 @@ void Game::Run()
     IsometricCamera camera;
     Project project("Levels/level1.lvl");
     levelObjects = project.GetGameObjects();
+    char title[64];
 
     while (engine->IsRunning())
     {
@@ -32,6 +33,9 @@ void Game::Run()
         handleInput();
         engine->Update();
         update();
+
+        sprintf(title, "%s - FPS: %i, Avg. FPS: %i", PROJECT_LABEL, engine->GetFPS(), engine->GetAverageFPS());
+        engine->SetWindowTitle(title);
 
         /***************************************************/
         /********************** Render *********************/

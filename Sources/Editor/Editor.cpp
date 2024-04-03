@@ -429,5 +429,32 @@ void Editor::saveProject()
 
 void Editor::openProject()
 {
-    std::cout << "Open project" << std::endl;
+    if (project)
+        project->Save(levelObjects);
+    else
+    {
+        try 
+        {
+            // Open project
+            Project *newProject = new Project();
+            newProject->OpenFromFile();
+
+            // Read objects from project
+            levelObjects.clear();
+            std::vector <GameObject3D *> gameObjects = newProject->GetGameObjects();
+            
+            levelObjects.reserve(gameObjects.size());
+            levelObjects.insert(levelObjects.end(), gameObjects.begin(), gameObjects.end());
+
+            // Set project
+            project = newProject;
+            Engine::GetInstance().SetWindowTitle("Look! The Dungeon! - Level Editor - " + newProject->GetFileName());
+        }
+        catch (std::exception e) 
+        {
+            std::string msg = e.what();
+            EXPECT_ERROR(msg != "Project open canceled", "%s", msg.c_str());
+        }
+    }
+
 }
