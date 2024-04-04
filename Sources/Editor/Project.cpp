@@ -46,6 +46,8 @@ void Project::Save(std::vector<GameObject3D *> gameObjects)
         file << levelDataJson.dump(4) << std::endl;
         file.close();
     }
+
+    modified = false;
 }
 
 void Project::OpenFromFile()
@@ -82,6 +84,8 @@ void Project::getProjectPathFromSaveDialog()
 
         if (projectPath != "")
             fileName = projectPath.substr(projectPath.find_last_of('/') + 1);
+
+        std::filesystem::current_path(cwd);
     }
     #elif IS_LINUX
     {
@@ -108,6 +112,7 @@ void Project::getProjectPathFromSaveDialog()
 
         gtk_widget_destroy(dialog);
         gtk_main_quit();
+        std::filesystem::current_path(cwd);
     }
     #endif
 }
@@ -115,6 +120,7 @@ void Project::getProjectPathFromSaveDialog()
 void Project::getProjectPathFromOpenDialog()
 {
     std::filesystem::path cwd = std::filesystem::current_path();
+    char buffer[512] = "\0";
 
     #if IS_WINDOWS
     {
@@ -132,10 +138,15 @@ void Project::getProjectPathFromOpenDialog()
         ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
         if (GetOpenFileName(&ofn))
+        {
+            std::replace(buffer, buffer + strlen(buffer), '\\', '/');
             projectPath = buffer;
+        }
 
         if (projectPath != "")
             fileName = projectPath.substr(projectPath.find_last_of('/') + 1);
+
+        std::filesystem::current_path(cwd);
     }
     #elif IS_LINUX
     {
@@ -160,7 +171,8 @@ void Project::getProjectPathFromOpenDialog()
             fileName = projectPath.substr(projectPath.find_last_of('/') + 1);
 
         gtk_widget_destroy(dialog);
-        gtk_main_quit();        
+        gtk_main_quit();
+        std::filesystem::current_path(cwd);
     }
     #endif
 }
@@ -280,6 +292,7 @@ GameObject3D *Project::readGameObjectFromJson(nlohmann::json jsonObject)
     }
     else if (jsonObject["Type"] == "Model")
     {
+        std::string cwd = std::filesystem::current_path().string();
         Model *model = new Model(jsonObject["Path"].get<std::string>());
         gameObject = model;
 
@@ -304,4 +317,14 @@ GameObject3D *Project::readGameObjectFromJson(nlohmann::json jsonObject)
 
     EXPECT_ERROR(gameObject == nullptr, "Can't load level! Game object processing failure. Object: %s", jsonObject.value("Name", "").c_str());
     return gameObject;
+}
+
+void Project::SetModified()
+{
+    modified = true;
+}
+
+bool Project::IsModified()
+{
+    return modified;
 }

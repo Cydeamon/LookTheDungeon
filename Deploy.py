@@ -151,6 +151,11 @@ if os.path.exists("./Assets/"):
     print(bcolors.OKCYAN + "Copying assets folder to deploy folder: " + deploy_folder + bcolors.ENDC)
     shutil.copytree("./Assets/", deploy_folder + "/Assets/")
 
+# Copy levels folder if exists
+if os.path.exists("./Levels/"):
+    print(bcolors.OKCYAN + "Copying levels folder to deploy folder: " + deploy_folder + bcolors.ENDC)
+    shutil.copytree("./Levels/", deploy_folder + "/Levels/")
+
 # Copy shaders binaries files if exists
 if os.path.exists("./Shaders/"):
     print(bcolors.OKGREEN + "Copying shaders binaries files to deploy folder: " + deploy_folder + bcolors.ENDC)

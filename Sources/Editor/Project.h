@@ -16,6 +16,8 @@ public:
     std::string GetFileName() { return fileName; }
     std::vector<GameObject3D *> GetGameObjects();
 
+    void SetModified();
+    bool IsModified();
 private:
     std::string projectPath;
     std::string fileName;
@@ -24,4 +26,5 @@ private:
     void getProjectPathFromOpenDialog();
     nlohmann::json getGameObjectJson(GameObject3D *gameObject);
     GameObject3D *readGameObjectFromJson(nlohmann::json jsonObject);
+    bool modified = false;
 };

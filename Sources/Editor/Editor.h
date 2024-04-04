@@ -36,5 +36,7 @@ private:
     void saveProject();
     void openProject();
 
-
+    void clearLevelObjects();
+    void updateTitle();
+    bool askUserForSave();
 };

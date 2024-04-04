@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 set(CMAKE_CXX_STANDARD 23)
-project(LookTheDungeon VERSION 0.1.16)
+project(LookTheDungeon VERSION 0.1.17)
 set(PROJECT_LABEL "Look! The Dungeon!")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../)
 set(PROJECT_EDITOR ${PROJECT_NAME}Editor)

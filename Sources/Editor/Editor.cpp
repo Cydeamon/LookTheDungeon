@@ -5,15 +5,20 @@
 #include "FreeMoveCamera.h"
 #include <cmath>
 
+#if IS_WINDOWS
+    #include <windows.h>
+#elif IS_LINUX
+    #include <gtk/gtk.h>
+#endif
+
 /**
  * TODO: Navmeshes
- * TODO: 90deg camera rotation via Num4, Num6
  */
 
 Editor::Editor()
 {
     init();
-    Engine::GetInstance().SetWindowTitle("Look! The Dungeon! - Level Editor");
+    updateTitle();
 }
 
 void Editor::init()
@@ -35,13 +40,16 @@ void Editor::init()
     int windowPosY = 0;
     bool windowMaximized;
 
-    try {
+    try
+    {
         windowWidth = Config::GetInstance().GetValue<int>("Window", "Width");
         windowHeight = Config::GetInstance().GetValue<int>("Window", "Height");
         windowPosX = Config::GetInstance().GetValue<int>("Window", "Position X");
         windowPosY = Config::GetInstance().GetValue<int>("Window", "Position Y");
         windowMaximized = Config::GetInstance().GetValue<bool>("Window", "Maximized");
-    } catch (std::exception &e) {
+    }
+    catch (std::exception &e)
+    {
         windowWidth = 1280;
         windowHeight = 720;
         windowMaximized = true;
@@ -57,6 +65,7 @@ void Editor::init()
         Engine::GetInstance().SetWindowMaximized();
 
     // Initialize editor
+    project = new Project();
     editorUI = &EditorUI::GetInstance();
 
     editorMouseRaycast = new RayCast3D();
@@ -128,6 +137,8 @@ void Editor::handleInput()
                 editorUI->RememberTransforms();
                 editorUI->RotationMode = false;
                 Input::CaptureMouse(false);
+                project->SetModified();
+                updateTitle();
             }
 
             if (editorUI->SelectedGameObject)
@@ -139,6 +150,8 @@ void Editor::handleInput()
                     selectedObject->GetChildren<Collider3D>()[0]->SetDiscoverableByRayCast(true);
                     levelObjects.push_back(selectedObject);
                     editorUI->UpdateSelectedObjectProperties();
+                    project->SetModified();
+                    updateTitle();
 
                     if (!editorUI->IsEditMode())
                     {
@@ -235,7 +248,7 @@ void Editor::handleInput()
         /////////////////////////////////////////////////////////////////////////////
         /////   Deleting objects
 
-        if (Input::IsJustPressed(KeyboardKey::DELETE))
+        if (Input::IsJustPressed(KeyboardKey::DEL))
         {
             if (editorUI->IsEditMode())
             {
@@ -278,7 +291,11 @@ void Editor::handleInput()
             if (editorUI->MoveWithMouse)
                 editorUI->RestoreTransforms();
             else
+            {
                 editorUI->RememberTransforms();
+                project->SetModified();
+                updateTitle();
+            }
 
             editorUI->MoveWithMouse = !editorUI->MoveWithMouse;
         }
@@ -382,12 +399,10 @@ Editor::~Editor()
 
 void Editor::quit()
 {
-    if (!project)
-        project = new Project();
-
     try
     {
-        project->Save(levelObjects);
+        if (project->IsModified() && askUserForSave())
+            project->Save(levelObjects);
     }
     catch (std::exception e)
     {
@@ -408,17 +423,23 @@ void Editor::quit()
 
 void Editor::newProject()
 {
-    std::cout << "New project" << std::endl;
+    if (project)
+    {
+        project->Save(levelObjects);
+        delete project;
+        project = new Project();
+    }
+
+    clearLevelObjects();
+    updateTitle();
 }
 
 void Editor::saveProject()
 {
-    if (!project)
-        project = new Project();
-
     try
     {
         project->Save(levelObjects);
+        updateTitle();
     }
     catch (std::exception e)
     {
@@ -429,32 +450,87 @@ void Editor::saveProject()
 
 void Editor::openProject()
 {
-    if (project)
+    if (project->IsModified() && askUserForSave())
         project->Save(levelObjects);
-    else
+
+    try
     {
-        try 
-        {
-            // Open project
-            Project *newProject = new Project();
-            newProject->OpenFromFile();
+        // Open project
+        Project *newProject = new Project();
+        newProject->OpenFromFile();
 
-            // Read objects from project
-            levelObjects.clear();
-            std::vector <GameObject3D *> gameObjects = newProject->GetGameObjects();
-            
-            levelObjects.reserve(gameObjects.size());
-            levelObjects.insert(levelObjects.end(), gameObjects.begin(), gameObjects.end());
+        // Read objects from project
+        clearLevelObjects();
+        std::vector<GameObject3D *> gameObjects = newProject->GetGameObjects();
+        levelObjects.reserve(gameObjects.size());
+        levelObjects.insert(levelObjects.end(), gameObjects.begin(), gameObjects.end());
 
-            // Set project
-            project = newProject;
-            Engine::GetInstance().SetWindowTitle("Look! The Dungeon! - Level Editor - " + newProject->GetFileName());
-        }
-        catch (std::exception e) 
-        {
-            std::string msg = e.what();
-            EXPECT_ERROR(msg != "Project open canceled", "%s", msg.c_str());
-        }
+        // Set project
+        project = newProject;
+        updateTitle();
     }
+    catch (std::exception e)
+    {
+        std::string msg = e.what();
+        EXPECT_ERROR(msg != "Project open canceled", "%s", msg.c_str());
+    }
+}
 
+void Editor::clearLevelObjects()
+{
+    for (auto gameObject: levelObjects)
+        delete gameObject;
+
+    levelObjects.clear();
+}
+
+void Editor::updateTitle()
+{
+    std::string title = "Look! The Dungeon! - Level Editor - ";
+
+    if (project->GetFileName() == "")
+        title += "New Project";
+    else
+        title += project->GetFileName();
+
+    if (project->IsModified())
+        title += " *";
+
+    Engine::GetInstance().SetWindowTitle(title);
+}
+
+bool Editor::askUserForSave()
+{
+    #if IS_WINDOWS
+    {
+        int result = MessageBox(
+            NULL,
+            "Project has been modified.\nSave changes?",
+            "Look! The Dungeon! - Level Editor",
+            MB_YESNO | MB_ICONQUESTION
+        );
+
+        return result == IDYES;
+    }
+    #elif IS_LINUX
+    {
+        gtk_init(NULL, NULL);
+        GtkWidget *dialog = gtk_file_chooser_dialog_new(
+            "Look! The Dungeon! - Level Editor",
+            NULL,
+            GTK_FILE_CHOOSER_ACTION_SAVE,
+            GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+            GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+            NULL
+        );
+
+        gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(GTK_WIDGET(dialog));
+        gtk_main_quit();
+
+        return response == GTK_RESPONSE_ACCEPT;
+    }
+    #endif
+
+    EXPECT_ERROR(false, "Can't save. Unknown platform");
 }
