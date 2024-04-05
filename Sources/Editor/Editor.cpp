@@ -69,7 +69,6 @@ void Editor::init()
     editorUI = &EditorUI::GetInstance();
 
     editorMouseRaycast = new RayCast3D();
-    editorMouseRaycast->EnableDebugDraw(true);
     isometricCamera = new IsometricCamera();
     isometricCamera->SetMouseRayCast(editorMouseRaycast);
 
@@ -335,7 +334,8 @@ void Editor::handleSelectedAssetPlacement()
 
     if (editorUI->IsRenderWindowHovered(0))
         isometricCamera->PerformMouseRayCast();
-    else
+
+    if (editorUI->IsRenderWindowHovered(1))
         freeMoveCamera->PerformMouseRayCast();
 
     Model *selectedObject = dynamic_cast<Model *>(editorUI->SelectedGameObject);
