@@ -17,6 +17,13 @@ void Game::init()
     engine->SetEngineMode(EngineMode::MODE_3D);
     engine->CenterWindow();
     setupUI();
+
+    // Init shaders
+    mainShaderProgram = new ShaderProgram;
+    mainShaderProgram->LoadShader("Shaders/CygineShaders/PerspectiveView.vert", ShaderProgram::VERTEX);
+    mainShaderProgram->LoadShader("Shaders/PhongLighting.frag", ShaderProgram::FRAGMENT);
+    mainShaderProgram->LinkProgram();
+    Engine::GetInstance().SetMain3DShaderProgram(mainShaderProgram);
 }
 
 void Game::Run()
