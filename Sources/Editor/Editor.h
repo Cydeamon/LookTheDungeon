@@ -39,4 +39,5 @@ private:
     void clearLevelObjects();
     void updateTitle();
     bool askUserForSave();
+    ShaderProgram *mainShaderProgram;
 };

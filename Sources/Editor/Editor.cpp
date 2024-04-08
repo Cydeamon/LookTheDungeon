@@ -84,6 +84,13 @@ void Editor::init()
     editorUI->SetSaveProjectCallback([this]() { saveProject(); });
     editorUI->SetOpenProjectCallback([this]() { openProject(); });
     editorUI->SetExitCallback([this]() { quit(); });
+
+    // Init shaders
+    mainShaderProgram = new ShaderProgram;
+    mainShaderProgram->LoadShader("Shaders/CygineShaders/PerspectiveView.vert", ShaderProgram::VERTEX);
+    mainShaderProgram->LoadShader("Shaders/PhongLighting.frag", ShaderProgram::FRAGMENT);
+    mainShaderProgram->LinkProgram();
+    Engine::GetInstance().SetMain3DShaderProgram(mainShaderProgram);
 }
 
 void Editor::Run()
@@ -418,7 +425,6 @@ void Editor::quit()
     Config::GetInstance().SetValue("Window", "Position X", Engine::GetInstance().GetWindowPosition().X);
     Config::GetInstance().SetValue("Window", "Position Y", Engine::GetInstance().GetWindowPosition().Y);
     Config::GetInstance().SetValue("Window", "Maximized", Engine::GetInstance().IsWindowMaximized());
-    exit(0);
 }
 
 void Editor::newProject()

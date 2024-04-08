@@ -2,7 +2,7 @@
 	path = Sources/Engine
 	url = git@github.com:Cygine/Cygine.git
 [submodule "Shaders"]
-	path = Shaders
+	path = Shaders/CygineShaders
 	url = git@github.com:Cygine/CygineShaders.git
 [submodule "Sources/Vendor/json"]
 	path = Sources/Vendor/json
